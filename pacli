@@ -34,8 +34,8 @@ Pacli is an interactive package manager for your command line terminal. It provi
 On the following Help Page all options Pacli offers are described in detail:
 
 HOME SCREEN
-Pacli's home screen is split into three parts (boxes):
-The first part focuses on updates, installations, removals of packages from Manjaro's repositories. It includes useful tools for these actions, too.
+Pacli's home screen is split into three parts:
+The first part focuses on updates, installations, and removals of packages from Manjaro's repositories. It includes useful tools for these actions, too.
 The second part includes options for cleaning, optimizing, and fixing your system. Options, which can break your system, are marked in red.
 The last part offers Arch User Repository (AUR) management options.
 Choose an option by entering its number and pressing [Enter].
