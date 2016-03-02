@@ -21,6 +21,6 @@ source=("git://github.com/Manjaro-Pek/$pkgname")
 md5sums=('SKIP')
 
 package () {
-	cd "$srcdir"
-        install -Dm755 "$srcdir/$pkgname/pacli" "$pkgdir/usr/bin/pacli"
+    install -Dm755 "$srcdir/$pkgname/pacli" "$pkgdir/usr/bin/pacli"
+    install -Dm544 "$srcdir/$pkgname/pacli.help" "$pkgdir/usr/share/doc/pacli/help"
 }
