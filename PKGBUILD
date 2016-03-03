@@ -6,7 +6,7 @@ pkgrel=1
 pkgdesc="An interactive pacman interface using fzf"
 arch=(any)
 url="https://github.com/Manjaro-Pek/$pkgname"
-license=GPL2
+license=(GPL2)
 depends=('fzf'
 	'pacman'
 	'yaourt'
