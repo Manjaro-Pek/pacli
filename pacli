@@ -326,13 +326,17 @@ NC='\e[0m'
             echo -e "\n$NC Most common Pacman errors fixed and system updated. To return to pacli press [Enter] $NC"
             read
             ;;
-        14)
+        14|140)
             echo
-            tail -2000 /var/log/pacman.log
-            echo
-            echo -e "$NC Last 2000 lines of Pacman Log displayed. Navigate with SHIFT+PageUp. To return to pacli press [Enter] $NC"
+            if [[ "$choix" == "14" ]]; then
+                tail -2000 /var/log/pacman.log
+                echo -e "\n$NC Last 2000 lines of Pacman Log displayed. Navigate with SHIFT+PageUp. To return to pacli press [Enter] $NC"
+            elif [[ "$choix" == "140" ]]; then
+                grep "\[ALPM\]" /var/log/pacman.log | grep -i " $(pacman -Slq | fzf-tmux -e --reverse --prompt='Select a package >') "
+                echo -e "\n$NC pacman history.To return to pacli press [Enter] $NC"
+            fi
             read
-            ;;			
+            ;;
         15)
             echo
             downgrade $(pacman -Qq | fzf-tmux -e --reverse --prompt='Select package to downgrade >')
