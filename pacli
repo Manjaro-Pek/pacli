@@ -314,7 +314,7 @@ NC='\e[0m'
                 clear
                 help_text $no
                 echo -e "\nTo return to pacli press [Enter] $NC"
-                read
+                ((no>0)) && read
                 continue
             fi
             echo -e "$RED Wrong option $NC"
