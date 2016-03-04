@@ -1,7 +1,7 @@
 # Maintainer: Chrysostomus @forum.manjaro.org
 
 pkgname=pacli
-pkgver=0.1
+pkgver=0.8
 pkgrel=1
 pkgdesc="An interactive pacman interface using fzf"
 arch=(any)
@@ -22,5 +22,7 @@ md5sums=('SKIP')
 
 package () {
     install -Dm755 "$srcdir/$pkgname/pacli" "$pkgdir/usr/bin/pacli"
+    cp -r "$srcdir/$pkgname/pacman.d" "$pkgdir/etc/"
+    chmod 754 "$pkgdir/etc/pacman.d/hooks.bin/pacli-description.sh"
     install -Dm544 "$srcdir/$pkgname/pacli.help" "$pkgdir/usr/share/doc/pacli/help"
 }
