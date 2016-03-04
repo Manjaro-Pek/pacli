@@ -62,24 +62,23 @@ NC='\e[0m'
     echo -e "                     $NC ::Pacli - Package manager:: $NC "
     echo ""
     echo -e " ┌────────────────────────────────────────────────────────────────────┐"
-    echo -e " │  $NC  1 $NC  Update System               $NC  2 $NC  Install Package           │"
-    echo -e " │  $NC  3 $NC  Remove Package + Deps       $NC  4 $NC  List Local Package Files  │"
-    echo -e " │  $NC  5 $NC  Package Information         $NC  6 $NC  Clean System              │"
+    echo -e " │  $NC  1 $NC  Update System               $NC  2 $NC  Clean System              │"
+    echo -e " │  $NC  3 $NC  Install Package             $NC  4 $NC  Remove Package + Deps     │"
+    echo -e " │  $NC  5 $NC  Package Information         $NC  6 $NC  List Local Package Files  │"
     echo -e " │  $NC  7 $NC  Dependency Tree             $NC  8 $NC  Reverse Dependency Tree   │"
     echo -e " └────────────────────────────────────────────────────────────────────┘"
     echo -e " ┌────────────────────────────────────────────────────────────────────┐"
-    echo -e " │  $NC  9 $NC  Configure pacman            $NC 10 $NC  Remove Orphaned Packages  │"
-    echo -e " │  $NC 11 $NC  Clean Package Cache         $NC 12 $NC  Defragment Database       │"
-    echo -e " │  $NC 13 $NC  Fix Errors                  $NC 14 $NC  Pacman Log                │"
-    echo -e " │  $NC 15 $NC  Downgrade Packages          $NC 16 $NC  Help                      │"
-    echo -e " │ $RED  17   Force Install Package        18   Force Update System      $NC │"
-    echo -e " │ $RED  19   Force Remove Package         20   Empty Package Cache      $NC │"
+    echo -e " │  $NC 9  $NC  Defragment Database         $NC 10 $NC  Help                      │"
+    echo -e " │  $NC 11 $NC  Downgrade Packages          $NC 12 $NC  Pacman Log                │"
+    echo -e " │ $RED  13   Fix Errors                   14   Configure pacman         $NC │"
+    echo -e " │ $RED  15   Force Install Package        16   Force Update System      $NC │"
+    echo -e " │ $RED  17   Force Remove Package         18   Empty Package Cache      $NC │"
     echo -e " └────────────────────────────────────────────────────────────────────┘"
     echo ""
     echo -e " ┌────────────────────────────────────────────────────────────────────┐"
-    echo -e " │  $NC 21 $NC  Update AUR                  $NC 22 $NC  Force Update AUR          │"
-    echo -e " │  $NC 23 $NC  Search + Install from AUR   $NC 24 $NC  Install from AUR          │"
-    echo -e " │  $NC 25 $NC  List Installed from AUR     $NC 26 $NC  Configure yaourt          │"
+    echo -e " │  $NC 19 $NC  Update AUR                  $NC 20 $NC  Force Update AUR          │"
+    echo -e " │  $NC 21 $NC  Search + Install from AUR   $NC 22 $NC  Install from AUR          │"
+    echo -e " │  $NC 23 $NC  List Installed from AUR     $NC 24 $NC  Configure yaourt          │"
     echo -e " └────────────────────────────────────────────────────────────────────┘"
     echo ""
     echo -e " $NC Enter a number between 0 and 25 and press [Enter]$NC $NC - 0 Exit Pacli$NC"
@@ -96,24 +95,28 @@ NC='\e[0m'
             ;;
         2)
             echo
+            sudo pacman-mirrors -g && sudo pacman -Syyu --color always
+            yaourt -Qdt
+            paccache -ruvk0
+            paccache -rvk2
+            echo
+            [ -f "${pacli_desc}" ] && cat "${pacli_desc}"
+            echo -e "$NC System is updated and cache is cleaned. To return to pacli press [Enter] $NC"
+            read
+            ;;
+        3)
+            echo
             sudo pacman -S $(package-query -Sl -f "%n - %d" | fzf-tmux -e -m  --reverse --prompt='Select packages to install (use TAB to toggle selection) >' | awk '{print $1}') --color always
             echo
             [ -f "${pacli_desc}" ] && cat "${pacli_desc}"
             echo -e "\n$NC Package installation is finished. To return to pacli press [Enter] $NC"
             read
             ;;
-        3)
+        4)
             echo
             sudo pacman -Rsn $(pacman -Qq | fzf-tmux -e -m --reverse --prompt='Select packages to remove (use TAB to toggle selection) >') --color always
             echo
             echo -e "$NC Package and all unneeded dependencies removed. To return to pacli press [Enter] $NC"
-            read
-            ;;
-        4)
-            echo
-            pacman -Ql $(pacman -Qq | fzf-tmux -e -m  --reverse --prompt='Select a packages of which to list all files (use TAB to toggle selection)  >') --color always
-            echo
-            echo -e "$NC All local files in package listed. To return to pacli press [Enter] $NC"
             read
             ;;
         5)
@@ -135,13 +138,9 @@ NC='\e[0m'
             ;;
         6)
             echo
-            sudo pacman-mirrors -g && sudo pacman -Syyu --color always
-            yaourt -Qdt
-            paccache -ruvk0
-            paccache -rvk2
+            pacman -Ql $(pacman -Qq | fzf-tmux -e -m  --reverse --prompt='Select a packages of which to list all files (use TAB to toggle selection)  >') --color always
             echo
-            [ -f "${pacli_desc}" ] && cat "${pacli_desc}"
-            echo -e "$NC System is updated and cache is cleaned. To return to pacli press [Enter] $NC"
+            echo -e "$NC All local files in package listed. To return to pacli press [Enter] $NC"
             read
             ;;
         7)
@@ -160,30 +159,32 @@ NC='\e[0m'
             ;;
         9)
             echo
-            [[ -z "$EDITOR" ]] && EDITOR='nano'
-            $EDITOR /etc/pacman.conf
+            sudo pacman-optimize
+            echo
+            echo -e "$NC Pacman Database defragmented and optimized for HDDs. To return to pacli press [Enter] $NC"
             read
             ;;
         10)
             echo
-            yaourt -Qdt
+            help_text
             echo
-            echo -e "$NC Task completed. To return to pacli press [Enter] $NC"
-            read
             ;;
         11)
             echo
-            paccache -ruvk0
-            paccache -rvk2
+            downgrade $(pacman -Qq | fzf-tmux -e --reverse --prompt='Select package to downgrade >')
             echo
-            echo -e "$NC Unneeded and old package versions removed. To return to pacli press [Enter] $NC"
+            echo -e "$NC Downgrade process finished. To return to pacli press [Enter] $NC"
             read
             ;;
-        12)
+        12|120)
             echo
-            sudo pacman-optimize
-            echo
-            echo -e "$NC Pacman Database defragmented and optimized for HDDs. To return to pacli press [Enter] $NC"
+            if [[ "$choix" == "14" ]]; then
+                tail -2000 /var/log/pacman.log
+                echo -e "\n$NC Last 2000 lines of Pacman Log displayed. Navigate with SHIFT+PageUp. To return to pacli press [Enter] $NC"
+            elif [[ "$choix" == "140" ]]; then
+                grep "\[ALPM\]" /var/log/pacman.log | grep -i " $(pacman -Slq | fzf-tmux -e --reverse --prompt='Select a package >') "
+                echo -e "\n$NC pacman history.To return to pacli press [Enter] $NC"
+            fi
             read
             ;;
         13)
@@ -195,72 +196,55 @@ NC='\e[0m'
             echo -e "\n$NC Most common Pacman errors fixed and system updated. To return to pacli press [Enter] $NC"
             read
             ;;
-        14|140)
+        14)
             echo
-            if [[ "$choix" == "14" ]]; then
-                tail -2000 /var/log/pacman.log
-                echo -e "\n$NC Last 2000 lines of Pacman Log displayed. Navigate with SHIFT+PageUp. To return to pacli press [Enter] $NC"
-            elif [[ "$choix" == "140" ]]; then
-                grep "\[ALPM\]" /var/log/pacman.log | grep -i " $(pacman -Slq | fzf-tmux -e --reverse --prompt='Select a package >') "
-                echo -e "\n$NC pacman history.To return to pacli press [Enter] $NC"
-            fi
+            [[ -z "$EDITOR" ]] && EDITOR='nano'
+            $EDITOR /etc/pacman.conf
             read
             ;;
         15)
-            echo
-            downgrade $(pacman -Qq | fzf-tmux -e --reverse --prompt='Select package to downgrade >')
-            echo
-            echo -e "$NC Downgrade process finished. To return to pacli press [Enter] $NC"
-            read
-            ;;
-        16)
-            echo
-            help_text
-            echo
-            ;;
-        17)
             echo
             sudo pacman -S --force $(pacman -Slq | fzf -e --reverse --prompt='Select package to install >') --color always
             echo
             echo -e "$NC Package installation in force mode is finished. To return to pacli press [Enter] $NC"
             read
             ;;
-        18)
+        16)
             echo
             sudo pacman -Syu --force --color always
             echo
             echo -e "$NC Your system is updated in force mode. To return to pacli press [Enter] $NC"
             read
             ;;
-        19)
+        17)
             echo
             sudo pacman -Rdd $(pacman -Qq | fzf-tmux -e -m --reverse --prompt='Select packages to remove >') --color always
             echo
             echo -e "$NC Dependency in force mode removed. To return to pacli press [Enter] $NC"
             read
             ;;
-        20)
+        18)
             echo
             yaourt -Scc
             echo
             echo -e "$NC Entire package cache emptied. To return to pacli press [Enter] $NC"
             read
             ;;
-        21)
+        19)
             echo
             yaourt -Syua
             echo
             echo -e "$NC Your system is updated. To return to pacli press [Enter] $NC"
             read
             ;;
-        22)
+        20)
             echo
             yaourt -Syua && yaourt -Syua --devel --noconfirm
             echo
             echo -e "$NC All AUR packages reinstalled. To return to pacli press [Enter] $NC"
             read
             ;;
-        23)
+        21)
             echo
             echo "Enter name of package to be searched and installed from AUR and press [Enter] to continue"
             echo
@@ -271,7 +255,7 @@ NC='\e[0m'
             echo -e "$NC Yaourt finished. To return to pacli press [Enter] $NC"
             read
             ;;
-        24|240)
+        22|220)
             echo
             if ((choix==24)); then
                 yaourt -S $(cat /tmp/packages | fzf-tmux -e -m --reverse --prompt='Select packages to install (toggle selection with TAB) >')
@@ -290,14 +274,14 @@ NC='\e[0m'
             fi
             read
             ;;
-        25)
+        23)
             echo
             pacman -Qem --color always
             echo
             echo -e "$NC All locally installed packages listed. To return to pacli press [Enter] $NC"
             read
             ;;
-        26)
+        24)
             echo
             [[ -z "$EDITOR" ]] && EDITOR='nano'
             file="$HOME/.yaourtrc"
