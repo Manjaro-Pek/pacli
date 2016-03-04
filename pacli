@@ -50,6 +50,8 @@ help_text()
 pacman -Slq > /tmp/packages &
 wget -P /tmp/aur/ https://aur.archlinux.org/packages.gz >/dev/null 2>&1 && gunzip -f /tmp/aur/packages.gz && cat /tmp/aur/packages >> /tmp/packages &
 
+pacli_desc='/tmp/pacli-desc'
+
 # set colors
 RED='\e[41m'
 NC='\e[0m'
@@ -66,7 +68,7 @@ NC='\e[0m'
     echo -e " │  $NC  7 $NC  Dependency Tree             $NC  8 $NC  Reverse Dependency Tree   │"
     echo -e " └────────────────────────────────────────────────────────────────────┘"
     echo -e " ┌────────────────────────────────────────────────────────────────────┐"
-    echo -e " │  $NC  9 $NC  Optimize Mirrors            $NC 10 $NC  Remove Orphaned Packages  │"
+    echo -e " │  $NC  9 $NC  Configure pacman            $NC 10 $NC  Remove Orphaned Packages  │"
     echo -e " │  $NC 11 $NC  Clean Package Cache         $NC 12 $NC  Defragment Database       │"
     echo -e " │  $NC 13 $NC  Fix Errors                  $NC 14 $NC  Pacman Log                │"
     echo -e " │  $NC 15 $NC  Downgrade Packages          $NC 16 $NC  Help                      │"
@@ -77,7 +79,7 @@ NC='\e[0m'
     echo -e " ┌────────────────────────────────────────────────────────────────────┐"
     echo -e " │  $NC 21 $NC  Update AUR                  $NC 22 $NC  Force Update AUR          │"
     echo -e " │  $NC 23 $NC  Search + Install from AUR   $NC 24 $NC  Install from AUR          │"
-    echo -e " │  $NC 25 $NC  List Installed from AUR                                     │"
+    echo -e " │  $NC 25 $NC  List Installed from AUR     $NC 26 $NC  Configure yaourt          │"
     echo -e " └────────────────────────────────────────────────────────────────────┘"
     echo ""
     echo -e " $NC Enter a number between 0 and 25 and press [Enter]$NC $NC - 0 Exit Pacli$NC"
@@ -88,14 +90,16 @@ NC='\e[0m'
             echo
             sudo pacman -Syu --color always
             echo
-            echo -e "$NC Your system is updated. To return to pacli press [Enter] $NC"
+            [ -f "${pacli_desc}" ] && cat "${pacli_desc}"
+            echo -e "\n$NC Your system is updated. To return to pacli press [Enter] $NC"
             read
             ;;
         2)
             echo
             sudo pacman -S $(package-query -Sl -f "%n - %d" | fzf-tmux -e -m  --reverse --prompt='Select packages to install (use TAB to toggle selection) >' | awk '{print $1}') --color always
             echo
-            echo -e "$NC Package installation is finished. To return to pacli press [Enter] $NC"
+            [ -f "${pacli_desc}" ] && cat "${pacli_desc}"
+            echo -e "\n$NC Package installation is finished. To return to pacli press [Enter] $NC"
             read
             ;;
         3)
@@ -156,8 +160,8 @@ NC='\e[0m'
             ;;
         9)
             echo
-            sudo pacman-mirrors -g && sudo pacman -Syy --color always
-            echo -e "\n$NC Best Manjaro mirror chosen. To return to pacli press [Enter] $NC"
+            [[ -z "$EDITOR" ]] && EDITOR='nano'
+            $EDITOR /etc/pacman.conf
             read
             ;;
         10)
