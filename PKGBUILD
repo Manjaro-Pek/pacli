@@ -22,6 +22,7 @@ md5sums=('SKIP')
 
 package () {
     install -Dm755 "$srcdir/$pkgname/pacli" "$pkgdir/usr/bin/pacli"
+    install -dm755 "${pkgdir}/etc/pacman.d/"
     cp -r "$srcdir/$pkgname/pacman.d" "$pkgdir/etc/"
     chmod 754 "$pkgdir/etc/pacman.d/hooks.bin/pacli-description.sh"
     install -Dm544 "$srcdir/$pkgname/pacli.help" "$pkgdir/usr/share/doc/pacli/help"
