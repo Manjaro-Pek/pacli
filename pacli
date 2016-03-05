@@ -30,9 +30,16 @@
 catplus()
 {
     local file="$1"
+    local id="${2:-0}"
+    local txt
     if [ -r "$file" ]; then
+        if ((id>0)); then
+            txt=$(sed -n "/[\*\*?\!\!]${id} /,/^$/p" "$file")
+        else
+            txt=$(cat "$file")
+        fi
         # bold for **texte**
-        local txt=$(sed -e 's|\*\*\([^\*]*\)\*\*|\\033[1m\1\\033[0m|g' "$file")
+        txt=$(sed -e 's|\*\*\([^\*]*\)\*\*|\\033[1m\1\\033[0m|g' <<< "$txt")
         # red for !!texte!!
         txt=$(sed -e 's|!!\([^!]*\)!!|\\e[01;31m\1\\033[0m|g' <<< "$txt")
         echo -e "$txt"
@@ -40,9 +47,11 @@ catplus()
 }
 help_text()
 {
+    local id="${1:-0}" command="less"
     local help="/usr/share/doc/pacli/help"
-    [ -f "$help" ] || help="./pacli.help" # for devs
-    catplus "$help" | less
+    [ -f "$help" ] || help="./pacli.help" # for devs or manual install
+    ((id>0)) && command='cat'
+    catplus "$help" "$id" | $command
 }
 
 # "yaourt -Sl" downloads a list of packages EVERY TIME it is called. this is unacceptable.
@@ -300,6 +309,14 @@ NC='\e[0m'
             read
             ;;
         *)
+            if [[ "$choix" =~ "h" ]]; then
+                no=$(echo "$choix" | grep -Eo "[0-9]*")
+                clear
+                help_text $no
+                echo -e "\nTo return to pacli press [Enter] $NC"
+                ((no>0)) && read
+                continue
+            fi
             echo -e "$RED Wrong option $NC"
             echo "Wait and try again later..."
             echo
