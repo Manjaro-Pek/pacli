@@ -47,7 +47,7 @@ catplus()
 }
 help_text()
 {
-    local id="${1:-0}" command="less"
+    local id="${1:-0}" command="less -R"
     local help="/usr/share/doc/pacli/help"
     [ -f "$help" ] || help="./pacli.help" # for devs or manual install
     ((id>0)) && command='cat'
