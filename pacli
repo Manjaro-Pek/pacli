@@ -62,7 +62,7 @@ wget -P /tmp/aur/ https://aur.archlinux.org/packages.gz >/dev/null 2>&1 && gunzi
 pacli_desc='/tmp/pacli-desc'
 
 # set colors
-RED='\e[41m'
+RED='\e[31m'
 NC='\e[0m'
 
     while true; do
