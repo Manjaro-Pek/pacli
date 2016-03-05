@@ -48,8 +48,10 @@ catplus()
 help_text()
 {
     local id="${1:-0}" command="less -R"
-    local help="/usr/share/doc/pacli/help"
-    [ -f "$help" ] || help="./pacli.help" # for devs or manual install
+    local help="./pacli.${LANG:0:2}.help"   # first for devs or manual install
+    [ -f "$help" ] || help="/usr/share/doc/pacli/${LANG:0:2}.help"
+    help="./pacli.help"
+    [ -f "$help" ] || help="/usr/share/doc/pacli/help"
     ((id>0)) && command='cat'
     catplus "$help" "$id" | $command
 }
@@ -208,7 +210,7 @@ NC='\e[0m'
         14)
             echo
             [[ -z "$EDITOR" ]] && EDITOR='nano'
-            $EDITOR /etc/pacman.conf
+            sudo $EDITOR /etc/pacman.conf
             read
             ;;
         15)
