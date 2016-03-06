@@ -29,12 +29,11 @@
 
 catplus()
 {
-    local file="$1"
-    local id="${2:-0}"
-    local txt
+    local file="$1" txt
+    local id="${2:-0}" ids=$((id+1))
     if [ -r "$file" ]; then
         if ((id>0)); then
-            txt=$(sed -n "/[\*\*?\!\!]${id} /,/^$/p" "$file")
+            txt=$(sed -n "/[\*\*?\!\!]${id} /,/[\*\*?\!\!]${ids} /p" "$file" | head -n-1)
         else
             txt=$(cat "$file")
         fi
