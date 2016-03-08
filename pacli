@@ -62,7 +62,27 @@ RED='\e[31m'
 NC='\e[0m'
 
 #width menu -3
-declare -r WMENU=68
+declare WMENU=68
+
+#only for test long menu
+unset TESTMENU
+while getopts tw: option; do
+    case $option in
+        w) WMENU="$OPTARG";;
+        t) TESTMENU=1;;
+    esac
+done
+# end get params for test
+((WMENU %2 )) && ((WMENU++))
+
+
+if [[ " ${args[*]} " =~ " -w " ]]; then
+    [[ "${args[0]}" == "-w" ]] && WMENU="${args[1]:-68}"
+    [[ "${args[1]}" == "-w" ]] && WMENU="${args[2]:-68}"
+    [[ "${args[2]}" == "-w" ]] && WMENU="${args[3]:-68}"
+    echo "${args[*]}"
+    echo $WMENU; #exit
+fi
 
 # params : "┌─┐" or "└─┘"
 menu_sep() {
@@ -78,7 +98,7 @@ menu_item() {
     local id="${1}" color="${3:-$NC}" txt="${2}"
     local colorend="$NC"
     local w=$(( (WMENU/2)-8  ))
-    local w2=$((w-2))
+    local w2=$((w-1))
     [[ "$color" == "$RED" ]] && colorend=''
     printf "${color}%3s  ${colorend} %-${w}s" "$id" "${txt:0:$w2}"
 }
@@ -98,7 +118,8 @@ menu_show()
     echo ""
     menu_sep "┌─┐"
     menu_items "1" "Update System" "$NC"        "2" "Clean System"
-    #menu_items "110" "UpdateSystemCleanSystemCleanSystem" "$NC" "222" "CleanSystemCleanSystemCleanSystem"
+    ((TESTMENU)) && \
+        menu_items "110" "01234567890123456789012345678901234567890" "$NC" "222" "01234567890123456789012345678901234567890"
     menu_items "3" "Install Package" "$NC"        "4" "Remove Package + Deps"
     menu_items "5" "Package Information" "$NC"        "6" "List Local Package Files"
     menu_items "7" "Dependency Tree " "$NC"        "8" "Reverse Dependency Tree"
