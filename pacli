@@ -82,7 +82,7 @@ menu_show()
 {
     clear
     echo ""
-    echo -e "                     $NC ::Pacli - Package manager:: $NC "
+    printf "$NC%s$NC" "                      ::Pacli - Package manager::"
     echo ""
     echo -e " ┌────────────────────────────────────────────────────────────────────┐"
     menu_items "1" "Update System" "$NC"        "2" "Clean System"
@@ -107,7 +107,7 @@ menu_show()
     menu_items "23" "List Installed from AUR" "$RED"    "24" "Configure yaourt"
     echo -e " └────────────────────────────────────────────────────────────────────┘"
     echo ""
-    echo -e " $NC Enter a number between 0 and 25 and press [Enter]$NC $NC - 0 Exit Pacli$NC"
+    printf "$NC%s$NC $NC%s$NC\n" "   Enter a number between 0 and 25 and press [Enter]" "- 0 Exit Pacli"
     echo ""
 }
 
