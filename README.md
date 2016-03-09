@@ -58,6 +58,12 @@ cd pacli && chmod +x pacli && ./pacli
 ```
 
 
+## Configuration
+
+pacli accepts the following config file:
+$HOME/.config/paclirc
+
+
 ## Help
 
 ### pacli Help
