@@ -140,7 +140,7 @@ menu_show()
     menu_items "23" "List Installed from AUR" "$NC"    "24" "Configure Yaourt"
     menu_sep "└─┘"
     echo ""
-    printf "$NC%s$NC $NC%s$NC\n" "   Enter a number between 0 and 25 and press [Enter]" "- 0 Exit Pacli"
+    printf "$NC%s$NC $NC%s$NC\n" "   Enter a number between 0 and 24 and press [Enter]" "- 0 Exit Pacli"
     echo ""
 }
 
