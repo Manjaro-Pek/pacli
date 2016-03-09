@@ -55,6 +55,95 @@ help_text()
     catplus "$help" "$id" | $command
 }
 
+########    menu    ########
+
+# set colors
+RED='\e[31m'
+NC='\e[0m'
+
+#width menu -3
+declare WMENU=68
+
+#only for test long menu
+unset TESTMENU
+while getopts tw: option; do
+    case $option in
+        w) WMENU="$OPTARG";;
+        t) TESTMENU=1;;
+    esac
+done
+# end get params for test
+((WMENU %2 )) && ((WMENU++))
+
+
+if [[ " ${args[*]} " =~ " -w " ]]; then
+    [[ "${args[0]}" == "-w" ]] && WMENU="${args[1]:-68}"
+    [[ "${args[1]}" == "-w" ]] && WMENU="${args[2]:-68}"
+    [[ "${args[2]}" == "-w" ]] && WMENU="${args[3]:-68}"
+    echo "${args[*]}"
+    echo $WMENU; #exit
+fi
+
+# params : "┌─┐" or "└─┘"
+menu_sep() {
+    local bar=''
+    for (( i=1; i<=$WMENU; i++ )); do
+        bar="${bar}${1:1:1}"
+    done
+    echo -e " ${1:0:1}${bar}${1:2:1}"
+}
+
+# params <id> <text> <color>
+menu_item() {
+    local id="${1}" color="${3:-$NC}" txt="${2}"
+    local colorend="$NC"
+    local w=$(( (WMENU/2)-8  ))
+    local w2=$((w-1))
+    [[ "$color" == "$RED" ]] && colorend=''
+    printf "${color}%3s  ${colorend} %-${w}s" "$id" "${txt:0:$w2}"
+}
+
+# params <id> <txt> <color> <id> <txt> <color>
+menu_items() {
+    local c1=$(menu_item "$1" "$2" "$3")
+    local c2=$(menu_item "$4" "$5" "$6")
+    printf " │  %s %s $NC│\n" "$c1" "$c2"
+}
+
+menu_show()
+{
+    clear
+    echo ""
+    printf "$NC%s$NC" "                      ::Pacli - Package manager::"
+    echo ""
+    menu_sep "┌─┐"
+    menu_items "1" "Update System" "$NC"        "2" "Clean System"
+    ((TESTMENU)) && \
+        menu_items "110" "01234567890123456789012345678901234567890" "$NC" "222" "01234567890123456789012345678901234567890"
+    menu_items "3" "Install Package" "$NC"        "4" "Remove Package + Deps"
+    menu_items "5" "Package Information" "$NC"        "6" "List Local Package Files"
+    menu_items "7" "Dependency Tree " "$NC"        "8" "Reverse Dependency Tree"
+    menu_sep "└─┘"
+    menu_sep "┌─┐"
+    menu_items "9" "Defragment Database" "$NC"        "10" "Help"
+    menu_items "11" "Downgrade Packages" "$NC"        "12" "Pacman Log"
+    menu_items "13" "Fix Errors" "$RED"             "14" "Configure pacman" "$RED"
+    menu_items "15" "Force Install Package" "$RED"  "16" "Force Update System" "$RED"
+    menu_items "17" "Force Remove Package" "$RED"   "18" "Empty Package Cache" "$RED"
+    #menu_items "177" "one test if only" ""   "" "" ""
+    #menu_items "" "" ""                             "178" "one test if only at right"
+    menu_sep "└─┘"
+    echo ""
+    menu_sep "┌─┐"
+    menu_items "19" "Update AUR" "$NC"                  "20" "Force Update AUR"
+    menu_items "21" "Search + Install from AUR" "$NC"   "22" "Install from AUR"
+    menu_items "23" "List Installed from AUR" "$NC"    "24" "Configure yaourt"
+    menu_sep "└─┘"
+    echo ""
+    printf "$NC%s$NC $NC%s$NC\n" "   Enter a number between 0 and 25 and press [Enter]" "- 0 Exit Pacli"
+    echo ""
+}
+
 # "yaourt -Sl" downloads a list of packages EVERY TIME it is called. this is unacceptable.
 # write package list of repositories to /tmp/packages. then, download AUR package list, unzip it to /tmp/aur/packages, and add it to the bottom of /tmp/packages.
 pacman -Slq > /tmp/packages &
@@ -62,37 +151,9 @@ wget -P /tmp/aur/ https://aur.archlinux.org/packages.gz >/dev/null 2>&1 && gunzi
 
 pacli_desc='/tmp/pacli-desc'
 
-# set colors
-RED='\e[31m'
-NC='\e[0m'
 
     while true; do
-    clear
-    echo ""
-    echo -e "                     $NC ::Pacli - Package manager:: $NC "
-    echo ""
-    echo -e " ┌────────────────────────────────────────────────────────────────────┐"
-    echo -e " │  $NC  1 $NC  Update System               $NC  2 $NC  Clean System              │"
-    echo -e " │  $NC  3 $NC  Install Package             $NC  4 $NC  Remove Package + Deps     │"
-    echo -e " │  $NC  5 $NC  Package Information         $NC  6 $NC  List Local Package Files  │"
-    echo -e " │  $NC  7 $NC  Dependency Tree             $NC  8 $NC  Reverse Dependency Tree   │"
-    echo -e " └────────────────────────────────────────────────────────────────────┘"
-    echo -e " ┌────────────────────────────────────────────────────────────────────┐"
-    echo -e " │  $NC 9  $NC  Defragment Database         $NC 10 $NC  Help                      │"
-    echo -e " │  $NC 11 $NC  Downgrade Packages          $NC 12 $NC  Pacman Log                │"
-    echo -e " │ $RED  13   Fix Errors                   14   Configure pacman         $NC │"
-    echo -e " │ $RED  15   Force Install Package        16   Force Update System      $NC │"
-    echo -e " │ $RED  17   Force Remove Package         18   Empty Package Cache      $NC │"
-    echo -e " └────────────────────────────────────────────────────────────────────┘"
-    echo ""
-    echo -e " ┌────────────────────────────────────────────────────────────────────┐"
-    echo -e " │  $NC 19 $NC  Update AUR                  $NC 20 $NC  Force Update AUR          │"
-    echo -e " │  $NC 21 $NC  Search + Install from AUR   $NC 22 $NC  Install from AUR          │"
-    echo -e " │  $NC 23 $NC  List Installed from AUR     $NC 24 $NC  Configure yaourt          │"
-    echo -e " └────────────────────────────────────────────────────────────────────┘"
-    echo ""
-    echo -e " $NC Enter a number between 0 and 25 and press [Enter]$NC $NC - 0 Exit Pacli$NC"
-    echo ""
+    menu_show
     read choix
     case $choix in
         1)
