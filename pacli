@@ -166,7 +166,7 @@ pacli_desc='/tmp/pacli-desc'
             ;;
         2)
             echo
-            sudo pacman-mirrors -g && sudo pacman -Syyu --color always
+            sudo pacman-mirrors -g && sudo pacman -Syy --color always
             yaourt -Qdt
             paccache -ruvk0
             paccache -rvk2
