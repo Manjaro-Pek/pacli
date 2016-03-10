@@ -104,7 +104,7 @@ menu_show()
     printf "$NC%s$NC" "                      ::Pacli - Package manager::"
     echo ""
     menu_sep "┌─┐"
-    menu_items "1" "Update System&é" "$NC"        "2" "Clean System"
+    menu_items "1" "Update System" "$NC"        "2" "Clean System"
     menu_items "3" "Install Package" "$NC"        "4" "Remove Package + Deps"
     menu_items "5" "Package Information" "$NC"        "6" "List Local Package Files"
     menu_items "7" "Dependency Tree " "$NC"        "8" "Reverse Dependency Tree"
