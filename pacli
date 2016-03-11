@@ -80,14 +80,10 @@ menu_item() {
     local id="${1}" color="${3:-$NC}" txt="${2}"
     local colorend="$NC"
     local w=$(( (WMENU/2)-8  ))
-    local w2=$((w-1))
-    #fix unicode text
-    local b=$(echo "$txt" |wc -c)  # bytes
-    local c=$(echo "$txt" |wc -m)  # chars
-    w=$((w+b-c))
-
+    #for unicode
+    txt="${txt}                                                        "
     [[ "$color" == "$RED" ]] && colorend=''
-    printf "${color}%3s  ${colorend} %-${w}s" "$id" "${txt:0:$w2}"
+    printf "${color}%3s  ${colorend} %-${w}s" "$id" "${txt:0:$w}"
 }
 
 # params <id> <txt> <color> <id> <txt> <color>
