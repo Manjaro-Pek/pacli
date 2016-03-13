@@ -117,12 +117,16 @@ Multiple commands attempt to fix the most common issues Manjaro users have with 
 This command removes Pacman's database lock.
 Attention: Only run this command when no other Pacman instance (e.g. Pacman, Yaourt, Pamac, Octopi, PacmanXG4, ...) is running.
 
-"sudo pacman-mirrors -g && sudo pacman -Syyuu"
-Then, it will search for working and good Manjaro repository mirrors/servers.
-Finally, the last command forces a redownload of the latest package database from the best Manjaro repository mirror. Then, all your installed packages are checked against this latest package database. If an updated package is available from the Manjaro repositories, it will get downloaded and installed on your system. If an installed package is newer than the same package in the Manjaro repositories, the installed package will get downgraded. This behavior ensures your packages are always in sync with the Manajro repositories, even if you have just switched the Manjaro mirror or switched from unstable to stable branch.
+"sudo pacman-mirrors -g && sudo pacman -Syy"
+This command searches for working and good Manjaro repository mirrors/servers. It will automatically choose the closest server for you. The second command forces a redownload of the latest package database from the best Manjaro repository mirror. 
 
-"sudo pacman -Sy gnupg archlinux-keyring manjaro-keyring && sudo rm -r /etc/pacman.d/gnupg && sudo pacman-key --init && sudo pacman-key --populate archlinux manjaro && sudo pacman-key --refresh-keys"
-This set of commands resets your Pacman, Manjaro, and Arch key datebase and makes sure that they are up to date, so that you won't get errors if there are new packagers, for example.
+"sudo rm -r /etc/pacman.d/gnupg && sudo pacman -Sy gnupg archlinux-keyring manjaro-keyring && sudo pacman-key --init && sudo pacman-key --populate archlinux manjaro"
+This series of commands resets and deletes your Pacman, Manjaro, and Arch key database and installs all keys again. This will solve problems with your local key database and Manjaro's and Arch's key database. Such problems can occur when new new packagers get added, for example.
+Attention: This command might take a long time to complete. If your system appears to stop or hang, it searches for entropy in order to generate a new key for you. In this case, it might help to open a browser and do some heavy surfing (with a lot of mouse movements, mouse klicks, and keyboard key presses): This can help to generate entropy faster.
+Attention: If you want to execute these commands manually on a system with key database problems, the command "pacman -Sy gnupg archlinux-keyring manjaro-keyring" will not work for you! In this case, connect manually (via your browser) to your Manjaro repository server, download these packages, and install these packages manually.
+
+"sudo pacman -Syyuu"
+This last command forces a redownload of the latest package database from the best Manjaro repository mirror. Then, all your installed packages are checked against this latest package database. If an updated package is available from the Manjaro repositories, it will get downloaded and installed on your system. If an installed package is newer than the same package in the Manjaro repositories, the installed package will get downgraded. This behavior ensures your packages are always in sync with the Manajro repositories, even if you have just switched the Manjaro mirror or switched from unstable to stable branch.
 
 
 !!14 - CONFIGURE PACMAN!!
