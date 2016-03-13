@@ -42,6 +42,11 @@ Answer with "y" to remove all listed orphaned packages. Simply pressing [ENTER] 
 By default Pacman uses this cache directory for downloading packages: /var/cache/pacman/pkg/... . No cached packages get deleted automatically. This enables you to DOWNGRADE PACKAGES, which are broken, without a working internet connection. The package cache of an old and actively used Manjaro installation can become quite large. Clean it to regain space on your root partition.
 The first command removes all packages from cache, which are not installed (anymore) on your system. The second command removes all old packages from your cache except the 2 latest versions: The version you have currently installed on your system and the previous version.
 
+"sudo pacman-optimize" (only when Manjaro is installed on a HDD)
+This command effectively defragments your Pacman database.
+On traditional hard drives (HDD) this command can speed up all actions related to Pacman. 
+Attention: It is NOT recommended to use this command on modern solid state hard drives (SSD)!
+
 
 **3 - INSTALL PACKAGE**
 "sudo pacman -S <PACKAGE NAME>"

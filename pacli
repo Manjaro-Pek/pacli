@@ -149,11 +149,16 @@ pacli_desc='/tmp/pacli-desc'
             yaourt -Qdt
             paccache -ruvk0
             paccache -rvk2
-            echo
+			
+			disk=$(df --output="source,target" | grep "/$" | cut -c 6-8 )
+			[ cat $(find /sys -name "rotational" 2>/dev/null | grep "$disk/queue") == 1 ] && sudo pacman-optimize
+			unset disk
+			
+			echo
             [ -f "${pacli_desc}" ] && cat "${pacli_desc}"
             echo -e "$NC System is updated and cache is cleaned. To return to pacli press [Enter] $NC"
             read
-            ;;
+			;;
         3)
             echo
             sudo pacman -S $(package-query -Sl -f "%n - %d" | fzf-tmux -e -m  --reverse --prompt='Select packages to install (use TAB to toggle selection) >' | awk '{print $1}') --color always
