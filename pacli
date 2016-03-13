@@ -250,7 +250,6 @@ pacli_desc='/tmp/pacli-desc'
             echo
             [[ -z "$EDITOR" ]] && EDITOR='nano'
             sudo $EDITOR /etc/pacman.conf
-            read
             ;;
         15)
             echo
