@@ -70,7 +70,7 @@ Have you ever installed a program and did not know with which command it can be 
 
 
 **7 - DEPENDENCIES TREE**
-"pactree -s <PACKAGE NAME>"
+"pactree <PACKAGE NAME>"
 This command will display a complete tree of all dependencies of <PACKAGE NAME>. Dependencies are packages required by <PACKAGE NAME> in order to function. When you install <PACKAGE NAME>, all its dependencies get installed, too.
 Attention: The dependency tree can be long and complex for higher level packages such as "firefox".
 
