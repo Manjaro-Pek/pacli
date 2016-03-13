@@ -195,7 +195,7 @@ pacli_desc='/tmp/pacli-desc'
             ;;
         7)
             echo
-            pactree -c -s $(pacman -Slq | fzf-tmux -e --reverse --prompt='Select a package >')
+            pactree -c $(pacman -Slq | fzf-tmux -e --reverse --prompt='Select a package >')
             echo
             echo -e "$NC Dependency tree displayed. To return to pacli press [Enter] $NC"
             read
