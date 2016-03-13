@@ -151,7 +151,7 @@ pacli_desc='/tmp/pacli-desc'
             paccache -rvk2
 			
 			disk=$(df --output="source,target" | grep "/$" | cut -c 6-8 )
-			[ cat $(find /sys -name "rotational" 2>/dev/null | grep "$disk/queue") == 1 ] && sudo pacman-optimize
+			[[ $(cat $(find /sys -name "rotational" 2>/dev/null | grep "$disk/queue")) == "1" ]] && sudo pacman-optimize
 			unset disk
 			
 			echo
