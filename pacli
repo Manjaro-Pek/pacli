@@ -249,18 +249,19 @@ pacli_desc='/tmp/pacli-desc'
 			
 			sudo rm -r /etc/pacman.d/gnupg
 			arch=$(uname -m)
+			mybranch=$(awk -F'=' '/^Branch/ {print $2}' /etc/pacman-mirrors.conf)
 			version="$(lang=C pacman -Si gnupg | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-			url="http://mirror.netzspielplatz.de/manjaro/packages/stable/core/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
+			url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
 			wget "${url}" && sudo pacman -U "gnupg${version}-${arch}.pkg.tar.xz" && sudo rm "gnupg${version}-${arch}.pkg.tar.xz"
 			
 			version="$(lang=C pacman -Si archlinux-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-			url="http://mirror.netzspielplatz.de/manjaro/packages/stable/core/${arch}/archlinux-keyring${version}-any.pkg.tar.xz"
+			url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/archlinux-keyring${version}-any.pkg.tar.xz"
 			wget "${url}" && sudo pacman -U "archlinux-keyring${version}-any.pkg.tar.xz" && sudo rm "archlinux-keyring${version}-any.pkg.tar.xz"
 
 			version="$(lang=C pacman -Si manjaro-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-			url="http://mirror.netzspielplatz.de/manjaro/packages/stable/core/${arch}/manjaro-keyring${version}-any.pkg.tar.xz"
+			url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/manjaro-keyring${version}-any.pkg.tar.xz"
 			wget "${url}" && sudo pacman -U "manjaro-keyring${version}-any.pkg.tar.xz" && sudo rm "manjaro-keyring${version}-any.pkg.tar.xz"
-			unset arch version url		             
+			unset arch version url mybranch
 			sudo pacman-key --init && sudo pacman-key --populate archlinux manjaro
 
             sudo pacman -Syyuu --color always
