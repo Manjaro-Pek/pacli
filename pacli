@@ -55,6 +55,45 @@ load_packages_infos()
     wget -P /tmp/aur/ https://aur.archlinux.org/packages.gz >/dev/null 2>&1 && gunzip -f /tmp/aur/packages.gz && cat /tmp/aur/packages >> /tmp/packages &
 }
 
+########    pacman    ######
+
+#13    fix errors
+fix_errors()
+{
+    declare cmd url version arch
+    sudo rm -f /var/lib/pacman/db.lck
+    cmd=(sudo pacman -Syy)
+    if [ -f "/usr/bin/pacman-mirrors" ]; then
+        sudo pacman-mirrors -g && "${cmd[@]}"
+
+        sudo rm -r /etc/pacman.d/gnupg
+        arch=$(uname -m)
+        mybranch=$(awk -F'=' '/^Branch/ {print $2}' /etc/pacman-mirrors.conf)
+        [ -z "$mybranch" ] && mybranch='stable'
+        version="$(lang=C pacman -Si gnupg | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
+        url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
+        wget "${url}" && sudo pacman -U "gnupg${version}-${arch}.pkg.tar.xz" && sudo rm "gnupg${version}-${arch}.pkg.tar.xz"
+
+        version="$(lang=C pacman -Si archlinux-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
+        url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/archlinux-keyring${version}-any.pkg.tar.xz"
+        wget "${url}" && sudo pacman -U "archlinux-keyring${version}-any.pkg.tar.xz" && sudo rm "archlinux-keyring${version}-any.pkg.tar.xz"
+
+        version="$(lang=C pacman -Si manjaro-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
+        url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/manjaro-keyring${version}-any.pkg.tar.xz"
+        wget "${url}" && sudo pacman -U "manjaro-keyring${version}-any.pkg.tar.xz" && sudo rm "manjaro-keyring${version}-any.pkg.tar.xz"
+
+        sudo pacman-key --init && sudo pacman-key --populate archlinux manjaro
+    elif [[ -f "/usr/bin/reflector" ]]; then
+        sudo reflector --verbose -l 4 -p http --sort rate --save /etc/pacman.d/mirrorlist && "${cmd[@]}"
+        sudo pacman -Sy gnupg archlinux-keyring && sudo rm -r /etc/pacman.d/gnupg && sudo pacman-key --init && sudo pacman-key --populate archlinux && sudo pacman-key --refresh-keys
+    else
+        "${cmd[@]}"
+    fi
+
+    sudo pacman -Syyuu --color always
+    print_prompt "$(gettext 'Most common Pacman errors fixed and system updated')." "" 1
+}
+
 ########    PACTREE    ########
 
 #7
@@ -205,29 +244,7 @@ while true; do
             ;;
         13)
             echo
-            sudo rm -f /var/lib/pacman/db.lck
-            sudo pacman-mirrors -g && sudo pacman -Syy
-			
-			sudo rm -r /etc/pacman.d/gnupg
-			arch=$(uname -m)
-			mybranch=$(awk -F'=' '/^Branch/ {print $2}' /etc/pacman-mirrors.conf)
-			version="$(lang=C pacman -Si gnupg | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-			url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
-			wget "${url}" && sudo pacman -U "gnupg${version}-${arch}.pkg.tar.xz" && sudo rm "gnupg${version}-${arch}.pkg.tar.xz"
-			
-			version="$(lang=C pacman -Si archlinux-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-			url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/archlinux-keyring${version}-any.pkg.tar.xz"
-			wget "${url}" && sudo pacman -U "archlinux-keyring${version}-any.pkg.tar.xz" && sudo rm "archlinux-keyring${version}-any.pkg.tar.xz"
-
-			version="$(lang=C pacman -Si manjaro-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-			url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/manjaro-keyring${version}-any.pkg.tar.xz"
-			wget "${url}" && sudo pacman -U "manjaro-keyring${version}-any.pkg.tar.xz" && sudo rm "manjaro-keyring${version}-any.pkg.tar.xz"
-			unset arch version url mybranch
-			sudo pacman-key --init && sudo pacman-key --populate archlinux manjaro
-
-            sudo pacman -Syyuu --color always
-            echo -e "\n$NC Most common Pacman errors fixed and system updated. To return to pacli press [Enter] $NC"
-            read
+            fix_errors "$choix"
             ;;
         14)
             echo
