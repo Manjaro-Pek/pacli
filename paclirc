@@ -8,7 +8,10 @@ helpred=1
 menuex=1
 
 # add cancel in select lists
-cancellist=1 
+cancellist=1
+
+# helper : yaourt or pacaur
+#helper=yaourt
 
 # hook descriptions
 #hook=1

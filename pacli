@@ -36,6 +36,7 @@ declare -A PARAMS=(
     ['helpred']="1"       # show help for red command by default
     ['cancellist']=1      # add "CANCEL" string on fzf list
     ['menuex']=1          # touch [m] show main menu fzf
+    ['helper']='yaourt'   # yaourt,pacaur not !apacman
     ['hook']=1            # display descriptions after install - upgrade
     ['boxcolor']=''       # theme color
 )
@@ -87,7 +88,7 @@ declare -a MENUS=(
     "21:$(gettext 'Search+Install from AUR')"
     "22:$(gettext 'Install from AUR')"
     "23:$(gettext 'List Installed from AUR')"
-    "24:$(gettext 'Configure ')Yaourt"
+    "24:$(gettext 'Configure ')${PARAMS['helper']^}"
     "└─┘"
     #extend menu, dont show >49
     "120:$(gettext 'Pacman history')"
@@ -103,17 +104,52 @@ unset LOCAL
 LG=${LANG:0:2}
 declare -r pacli_desc='/tmp/pacli-desc'
 
+# load helpers functions
+libfile="./lib/helper-${PARAMS['helper']}.sh"
+[ -f "$libfile" ] || libfile="/usr/lib/${pkgname}/helper-${PARAMS['helper']}.sh"
+[ -f "$libfile" ] || { echo "$(gettext 'helper not supported')" 1>&2 ; exit 1; } 
+. "$libfile"
+
 ########    functions    ########
 
 # "yaourt -Sl" downloads a list of packages EVERY TIME it is called. this is unacceptable.
 # write package list of repositories to /tmp/packages. then, download AUR package list, unzip it to /tmp/aur/packages, and add it to the bottom of /tmp/packages.
 load_packages_infos()
 {
-    pacman -Slq 2>/dev/null 1>/tmp/packages &
+    helper -Slq 2>/dev/null 1>/tmp/packages &
     wget -P /tmp/aur/ https://aur.archlinux.org/packages.gz >/dev/null 2>&1 && gunzip -f /tmp/aur/packages.gz && cat /tmp/aur/packages >> /tmp/packages &
 }
 
 ########    pacman    ######
+
+#5  package info
+package_information()
+{
+    declare pkg='' cmd='Sii' out
+    pacman -Qq > /tmp/local_packages
+    cat /tmp/packages /tmp/local_packages | sort -u | uniq > /tmp/all_packages
+
+    pkg=$(print_enter "$(gettext 'Select a package to display information about')" \
+        "$(cat /tmp/packages)" )
+    (($?!=0)) && return 1
+    [ -z "$pkg" ] && return 1
+    $(helper_pkgisinstalled "${pkg}") && cmd='Qii'  #(yaourt -Qq "${pkg}" &>/dev/null) && cmd='Qii'
+    out=$(helper "-$cmd" "${pkg}")
+    echo -e "$out" | grep -v "\-\-$" | sed 's/ : \(.*\)/ \x1b[0m: \x1b[1m\1\x1b[0m/; s/  \(.*\)/  \x1b[1m\1\x1b[0m/'
+    print_prompt "$(gettext 'Package information displayed')."
+}
+
+#6  List Local Package Files
+package_list_files()
+{
+    declare pkg 
+    pkg=($(print_enter "$(gettext 'Select a packages of which to list all files (use TAB to toggle selection)')" \
+            "$(helper '-Qq')" '-m' ))
+    (($?!=0)) && return 1
+    [ -z "$pkg" ] && return 1
+    pacman -Ql "${pkg[@]}"      #helper -Ql "${pkg[*]}"
+    print_prompt "$(gettext 'All local files in package listed')." "" 1
+}
 
 #13    fix errors
 fix_errors()
@@ -160,7 +196,8 @@ pactree_run()
     declare pkg=$(print_enter "$(gettext 'Select a package')" "$(pacman -Slq)" )
     (($?!=0)) && return 1
     [ -z "$pkg" ] && return 1
-    #declare option='s' AUR or NOT ?
+    declare option='s'
+    (helper_islocal) && option=''  # AUR
     pactree -c${option} "${pkg}" 2>/dev/null
     print_prompt "$(gettext 'Dependency tree displayed')." "" 1
 }
@@ -213,7 +250,7 @@ main()
         2)
             echo
             sudo pacman-mirrors -g && sudo pacman -Syy --color always
-            yaourt -Qdt
+            helper -Qdt
             paccache -ruvk0
             paccache -rvk2
 			
@@ -228,7 +265,7 @@ main()
         3)
             echo
             pkg=($(print_enter "$(gettext 'Select packages to install (use TAB to toggle selection)')" \
-                "$(package-query -Sl -f '%n - %d')" '-m' ))
+                "$(helper_listdesc)" '-m' ))
             sudo pacman -S "${pkg[@]}" --color always
             unset pkg
             echo
@@ -245,32 +282,13 @@ main()
             print_prompt "$(gettext 'Package and all unneeded dependencies removed')." "" 1
             ;;
         5)
-            clear
+            ((NOCLEAR)) || clear
             echo
-            yaourt -Qq > /tmp/local_packages
-            
-            cat /tmp/packages /tmp/local_packages | sort | uniq > /tmp/all_packages
-            pkg=$(cat /tmp/packages | fzf-tmux -e --reverse --prompt='Select a package to display information about >')
-            if (yaourt -Qq "${pkg}" &>/dev/null); then
-                out=$(yaourt -Qii "${pkg}")
-            else
-                out=$(yaourt -Sii "${pkg}")
-            fi
-            echo -e "$out" | grep -v "\-\-$" | sed 's/ : \(.*\)/ \x1b[0m: \x1b[1m\1\x1b[0m/; s/  \(.*\)/  \x1b[1m\1\x1b[0m/'
-            unset pkg out
-            echo -e "\n$NC Package information displayed. To return to pacli press [Enter] $NC"
-            read
+            package_information "$choix"
             ;;
         6)
             echo
-            pkg=($(print_enter "$(gettext 'Select a packages of which to list all files (use TAB to toggle selection)')" \
-            "$(pacman -Qq)" '-m' ))
-            (($?!=0)) && continue
-            [ -z "$pkg" ] && continue
-            pacman -Ql "${pkg[@]}" --color always
-            echo
-            echo -e "$NC All local files in package listed. To return to pacli press [Enter] $NC"
-            read
+            package_list_files "$choix"
             ;;
         7)
             echo
@@ -306,7 +324,7 @@ main()
             ;;
         120):
             echo
-            pkg=$(print_enter "$(gettext 'Select package')" "$(yaourt -Slq)" )
+            pkg=$(print_enter "$(gettext 'Select package')" "$(helper -Slq)" )
             (($?!=0)) && continue
             [ -z "$pkg" ] && continue
             grep "\[ALPM\]" /var/log/pacman.log | grep " $pkg"
@@ -353,31 +371,40 @@ main()
         18)
             help_text 15 "${PARAMS['helpred']}" || continue
             echo
-            yaourt -Scc
+            helper -Scc
             print_prompt "$(gettext 'Entire package cache emptied')."
             ;;
         19)
             echo
-            yaourt -Syua
+            helper -Syua
             print_prompt "$(gettext 'Your system is updated')." "" 1
             ;;
         20)
             echo
-            yaourt -Syua && yaourt -Syua --devel --noconfirm
+            helper -Syua && helper -Syua --devel --noconfirm
             print_prompt "$(gettext 'All AUR packages reinstalled')." "" 1
             ;;
         21)
+            if [[ "${PARAMS['helper']}" == 'pacaur' ]]; then
+                print_prompt "$(gettext 'not exist with pacaur ????')."
+                continue
+            fi
             echo
             echo "Enter name of package to be searched and installed from AUR and press [Enter] to continue"
             echo
             read package
-            [ -n "$package" ] && yaourt "$package"
+            [ -n "$package" ] && helper "$package"
             unset $package
-            print_prompt "$(gettext 'Yaourt finished')." "" 1
+            print_prompt "$(gettext 'AUR Helper finished')." "" 1
             ;;
         22)
             echo
-            yaourt -S $(cat /tmp/packages | fzf-tmux -e -m --reverse --prompt='Select packages to install (toggle selection with TAB) >')
+            pkg=($(print_enter "$(gettext 'Select packages to install (toggle selection with TAB)')" \
+                "$(cat /tmp/packages)" '-m' ))
+            (($?!=0)) && continue
+            [ -z "$pkg" ] && continue
+            helper -S "${pkg[*]}"
+            unset pkg
             print_prompt "$(gettext 'Installation from AUR finished')." "" 1
             ;;
         220)
@@ -395,20 +422,12 @@ main()
             ;;
         23)
             echo
-            pacman -Qem --color always
+            helper -Qem 
             print_prompt "$(gettext 'All locally installed packages listed')." "" 1
             ;;
         24)
             echo
-            [[ -z "$EDITOR" ]] && EDITOR='nano'
-            file="$HOME/.yaourtrc"
-            [ -f "$file" ] || file="$HOME/.config/yaourtrc"
-            if [ -f "$file" ]; then 
-                $EDITOR "$file"
-            else 
-                cp /etc/yaourtrc "$file" && $EDITOR "$file"
-            fi
-            unset file
+            helperrc_edit "$choix"
             echo
             ;;            
         0)
