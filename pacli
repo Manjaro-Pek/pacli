@@ -91,7 +91,9 @@ declare -a MENUS=(
     "24:$(gettext 'Configure ')${PARAMS['helper']^}"
     "└─┘"
     #extend menu, dont show >49
+    "100:$(gettext 'Informations')"
     "120:$(gettext 'Pacman history')"
+    "220:$(gettext 'Install from git repository')"
 )
 readonly MENUS
 
@@ -223,6 +225,71 @@ install_git_aur()
     fi
     [ -d "$dirgit" ] && rm -rf "$dirgit"
     print_prompt "$(gettext 'Installation from git repo finished')."
+}
+
+#100   info repo, branch, stats yaourt
+informations ()
+{
+    declare mybranch myrepo myurl testfile
+    declare -i pacnews=0 pacsaves=0
+    mybranch=$(awk -F'=' '/^Branch/ {print $2}' /etc/pacman-mirrors.conf)
+    [ -z "$mybranch" ] && mybranch='stable'
+    myrepo=$(awk -F'=' '/^Server/ {print $2}' /etc/pacman.d/mirrorlist | head -n 1)
+    if [ -f "/usr/bin/pacman-mirrors" ]; then
+        #Server = http://server.org/stable/$repo/$arch
+        myrepo=$(echo "$myrepo" | grep -Eo "http(.*)/$mybranch")
+        myurl=${myrepo/$mybranch/}
+        testfile='state'
+    else
+        # archlinux
+        #Server = http://server.org/$repo/os/$arch
+        myrepo=$(echo "$myrepo" | grep -o "http.*")
+        myurl=${myrepo%%'$'*}
+        testfile='lastupdate'
+    fi
+
+    lastupdate=$(curl -s --head "${myurl}${testfile}" | awk -F': ' '/Last-Mo/ {print $2 }')
+
+    pacnews=$(find '/etc' -name "*.pacnew" -type f 2>/dev/null | wc -l)
+    pacsaves=$(find '/etc' -name "*.pacsave" -type f 2>/dev/null | wc -l)
+
+    mcenter "$(gettext 'Server')"
+    menu_sep "┌─┐"
+    page_item "$(gettext 'Branch')" "$mybranch" "$BOLD"
+    page_item "$(gettext 'Server')" "$myurl" "$BOLD"
+    page_item "$(gettext 'Last update')" "$(date -d "$lastupdate")" "$BOLD"
+    menu_sep "└─┘"
+    #echo
+    mcenter "$(gettext 'Packages')"
+    menu_sep "┌─┐"
+    page_item "$(gettext 'Total installed')" "$(pacman -Qq | wc -l)" "" "r"
+    page_item "$(gettext 'Explicitly installed')" "$(pacman -Qenq | wc -l)" "$BOLD" "r"
+    page_item "AUR" "$(pacman -Qmq | wc -l)" "$BOLD" "r"
+    page_item "$(gettext 'Orphans')" "$(pacman -Qdttq | wc -l)" "$BOLD" "r"
+    page_item "$(gettext 'Available')" "$(pacman -Slq | wc -l)" "$BOLD" "r"
+    page_item "$(gettext 'Available with AUR')" "$(tac /tmp/packages | wc -l)" "$BOLD" "r"
+    menu_sep "└─┘"
+
+    if ((pacnews>0 || pacsaves>0)); then
+        #echo
+        mcenter "$(gettext 'Pacman config files')"
+        menu_sep "┌─┐"
+        ((pacnews>0)) &&  page_item "$(gettext 'PacNew files')" "$pacnews" "$BOLD" "r"
+        ((pacsaves>0)) && page_item "$(gettext 'PacSave files')" "$pacsaves" "$BOLD" "r"
+        menu_sep "└─┘"
+    fi
+
+    mcenter "$(gettext 'Pacli Config')"
+    menu_sep "┌─┐"
+    page_item "$(gettext 'help before red ')(helpred)" "$(int_to_yes ${PARAMS['helpred']})"
+    page_item "$(gettext 'extend menu') (menuex)" "$(int_to_yes ${PARAMS['menuex']})"
+    page_item "$(gettext 'cancel in list') (cancellist)" "$(int_to_yes ${PARAMS['cancellist']})"
+    page_item "$(gettext 'show descriptions') (hook)" "$(int_to_yes ${PARAMS['hook']})"
+    page_item "helper" "${PARAMS['helper']}"
+    menu_sep "└─┘"
+
+    #yaourt --stats
+    print_prompt "$(gettext 'General Informations')."
 }
 
 ########    PACTREE    ########
@@ -458,7 +525,12 @@ main()
             echo
             helperrc_edit "$choix"
             echo
-            ;;            
+            ;;
+        100)
+            ((NOCLEAR)) || clear
+            echo
+            informations "$choix"
+            ;;
         0)
             clear && exit
             ;;

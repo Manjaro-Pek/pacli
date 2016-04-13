@@ -261,6 +261,28 @@ read_choice()
 }
 
 
+########    page    ########
+
+
+# params <id> <text> <color> <align :r=right>
+page_item() {
+    declare id="${1}" color="${3:-$BOLD}" txt="${2}" align="$4"
+    declare -i w=$(( (WMENU/2)-11 ))
+    declare -i w2=$(( w+14 ))
+    id="${id}                                                          " #for unicode
+    if [ -z "$align" ]; then
+        txt="${txt}                                                        "
+        printf " ${PARAMS[boxcolor]}│${NC}  ${NC}%-${w}s ${NC}${color} %-${w2}s${NC}  ${PARAMS[boxcolor]}│${NC}\n" "${id:0:$w} :" "${txt:0:$w2}"
+    else
+        printf " ${PARAMS[boxcolor]}│${NC}  ${NC}%-${w}s ${NC}${color} %${w2}s${NC}  ${PARAMS[boxcolor]}│${NC}\n" "${id:0:$w} :" "${txt:0:$w2}"
+    fi
+}
+
+int_to_yes() {
+    [[ "$1" == "1" ]] && printf 'yes' || printf 'no'
+}
+
+
 ########   help    ########
 
 # catplus()
