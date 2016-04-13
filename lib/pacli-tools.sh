@@ -241,6 +241,25 @@ menu_show()
     printf "\n$NC%s$NC\n" "$(mcenter $PROMPT)"
 }
 
+# read choise after main menu
+read_choice()
+{
+    declare choice="$1"
+    if [ -n "$choice" ]; then
+        declare -i int=$((choice+0))
+        ((int>0)) && { echo $int; return 0; }
+    fi
+    if ((MENUEX==1)); then
+        choice=$(input_mnu "MENU")
+        if (($?!=0));then
+            choice=''
+        fi
+    else
+        read choice
+    fi
+    printf "$choice"
+}
+
 
 ########   help    ########
 

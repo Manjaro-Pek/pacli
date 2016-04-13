@@ -193,10 +193,16 @@ menu_calculate_size "$(gettext 'Enter a number between 0..%s and press [Enter] -
 
 main()
 {
+  declare arg="$1"
   while true; do
     menu_show "$screen_buffer"
-    read choix
+    choix="$(read_choice "$arg")"
+    arg=''
     case $choix in
+        m)
+            #use menu fzf if set in paclirc
+            (("${PARAMS['menuex']}"==1)) && MENUEX=1
+            ;;
         1)
             echo
             sudo pacman -Syu --color always
@@ -408,22 +414,25 @@ main()
         0)
             clear && exit
             ;;
+        '')
+            # cancel in menuEx
+            unset MENUEX
+            ((NOCLEAR)) || clear
+            ;;
         *h)
+            # 4h or 5-h ?
             if [[ "$choix" =~ "h" ]]; then
-                no=$(echo "$choix" | grep -Eo "[0-9]*")
-                clear
-                help_text $no
-                echo -e "\nTo return to pacli press [Enter] $NC"
-                ((no>0)) && read
+                help_text $(echo "$choix" | grep -o "[0-9]*")
                 continue
             fi
             ;;
         *)
-            echo -e "$RED Wrong option $NC"
-            echo "Wait and try again later..."
+            printf "$RED %s $NC\n" "$(gettext 'Wrong option') $choix"
+            echo "$(gettext 'Wait and try again later...')"
             echo
             sleep 1
-            clear
+            unset MENUEX
+            ((NOCLEAR)) || clear
             ;;
     esac
   done
@@ -433,5 +442,6 @@ if [ "${BASH_SOURCE[0]}" == "$0" ]; then
     load_packages_infos
     #make home screen
     declare -r screen_buffer=$(menu_load)
-    main
+    #loop menu
+    main "${1:-0}"
 fi
