@@ -10,20 +10,29 @@ license=(GPL2)
 depends=('fzf'
 	'pacman'
 	'yaourt'
-	'pacman-mirrorlist'
 	'sudo'
 	'gzip'
 	'downgrade'
 	'bash')
 makedepends=('git')
-optdepends=('update-notifier: Automatically get notified when updates are available')
+optdepends=('update-notifier: Automatically get notified when updates are available'
+    'pacman-mirrors: provides all mirrors for Manjaro'
+    'reflector: retrieve and filter the latest Pacman mirror list')
 source=("git://github.com/Manjaro-Pek/$pkgname")
 md5sums=('SKIP')
 
 package () {
+    cd "$srcdir/$pkgname"
+    install -dm755 "${pkgdir}/usr/lib/$pkgname"
+    install -dm755 "${pkgdir}/usr/share/doc/$pkgname"
+
     install -Dm755 "$srcdir/$pkgname/pacli" "$pkgdir/usr/bin/pacli"
-    install -dm755 "${pkgdir}/etc/pacman.d/"
-    cp -r "$srcdir/$pkgname/pacman.d" "$pkgdir/etc/"
-    chmod 754 "$pkgdir/etc/pacman.d/hooks.bin/pacli-description.sh"
-    install -Dm544 "$srcdir/$pkgname/pacli.help" "$pkgdir/usr/share/doc/pacli/help"
+    cp -r lib/* "$pkgdir/usr/lib/$pkgname"
+    chmod +x "$pkgdir/usr/lib/$pkgname/pacli-description.sh"
+    # ln -s "$pkgdir/usr/lib/$pkgname/pacli-description.sh" "$pkgdir/etc/pacman.d/hooks/pacli-description.sh"
+
+    install -Dm644 pacli.help "$pkgdir/usr/share/doc/$pkgname/help"
+    for lg in {fr,fr}; do   #for lg in {fr,de,it,sp}; do
+        install -Dm644 "pacli.$lg.help" "$pkgdir/usr/share/doc/$pkgname/$lg.help"
+    done
 }

@@ -7,5 +7,5 @@ Target = *
 [Action]
 Description = Descriptions
 When = PostTransaction
-Exec = /etc/pacman.d/hooks.bin/pacli-description.sh 500
+Exec = /usr/lib/pacli/lib/pacli-description.sh 500
 NeedsTargets
