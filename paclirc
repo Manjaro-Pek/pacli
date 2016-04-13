@@ -16,5 +16,9 @@ cancellist=1
 # hook descriptions
 #hook=1
 
+# pacnew editor (default $EDITOR) with kdesu or gksu
+#peditor=kompare
+#peditor=diffuse
+
 # color frame : 0m null , 1m bold, 32m green 33m yellow ...
 #boxcolor=32m

@@ -38,6 +38,7 @@ declare -A PARAMS=(
     ['menuex']=1          # touch [m] show main menu fzf
     ['helper']='yaourt'   # yaourt,pacaur not !apacman
     ['hook']=1            # display descriptions after install - upgrade
+    ['peditor']=''        # diff editor .pacnews files
     ['boxcolor']=''       # theme color
 )
 
@@ -92,6 +93,7 @@ declare -a MENUS=(
     "└─┘"
     #extend menu, dont show >49
     "100:$(gettext 'Informations')"
+    "111:$(gettext 'Manage .pacnews files')"
     "120:$(gettext 'Pacman history')"
     "220:$(gettext 'Install from git repository')"
 )
@@ -290,6 +292,15 @@ informations ()
 
     #yaourt --stats
     print_prompt "$(gettext 'General Informations')."
+}
+
+#111    pacnews
+run_pacnews ()
+{
+    declare libfile='./lib/pacnew.sh'
+    [ -f "$libfile" ] || libfile="/usr/lib/${pkgname}/pacnew.sh"
+    . "$libfile"
+    main_pacnew
 }
 
 ########    PACTREE    ########
@@ -530,6 +541,10 @@ main()
             ((NOCLEAR)) || clear
             echo
             informations "$choix"
+            ;;
+        111)
+            ((NOCLEAR)) || clear
+            run_pacnews "$choix"
             ;;
         0)
             clear && exit
