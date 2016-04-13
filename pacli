@@ -31,6 +31,9 @@ pkgname=pacli
 
 unset NOCLEAR
 
+export TEXTDOMAIN=pacli
+export TEXTDOMAINDIR="/usr/share/locale"
+
 # user parameters, default values in paclirc
 declare -A PARAMS=(
     ['helpred']="1"       # show help for red command by default
