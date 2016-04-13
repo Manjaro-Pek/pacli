@@ -188,6 +188,43 @@ fix_errors()
     print_prompt "$(gettext 'Most common Pacman errors fixed and system updated')." "" 1
 }
 
+#220    Install from a repot git with a PKGBUILD file
+install_git_aur()
+{
+    declare -r dirgit='/tmp/pacli-gits'
+    declare url
+    declare -i nb
+    [ -d "$dirgit" ] && rm -rf "$dirgit"
+    read -p "$(gettext 'Enter git url repository'): " -r url
+    git clone "$url" "$dirgit" && \
+    if [ -d "$dirgit" ]; then
+        cd $dirgit
+        nb=$(git branch -a | grep -Ev "\*|>" | wc -l)
+        if ((nb>0)); then
+            branch=$(git branch -a | grep -Ev "\*|>" | sed 's/\* //' | fzf-tmux -e --reverse --prompt='Select a branch >')
+            echo "branch choise: $branch"
+            branch=${branch##*/}
+            echo "go to : $branch"
+            git checkout "$branch" #$(echo "$branch" 1>/dev/null | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+            #git checkout $branch 1>/dev/null
+            git branch | grep "\*"
+            read -p "Press any key..." -n1 -s
+        fi
+        if [ -f "$dirgit/PKGBUILD" ]; then
+            #make erase if bad formed
+            [ -d "$dirgit/src" ] && rm -rfv "$dirgit/src"
+            [ -d "$dirgit/pkg" ] && rm -rfv "$dirgit/pkg"
+            [[ -n "${url##*\/}" && -f "$dirgit/${url##*\/}" ]] && rm -v "$dirgit/${url##*\/}"
+            [[ -n "${url##*\/}" && -d "$dirgit/${url##*\/}" ]] && rm -rfv "$dirgit/${url##*\/}"
+            makepkg -scfi
+        else
+            echo "$(gettext 'Error: ') $(gettext 'not AUR repot')"
+        fi
+    fi
+    [ -d "$dirgit" ] && rm -rf "$dirgit"
+    print_prompt "$(gettext 'Installation from git repo finished')."
+}
+
 ########    PACTREE    ########
 
 #7
@@ -409,16 +446,8 @@ main()
             ;;
         220)
             echo
-            dirgit='/tmp/pacli-git'
-            [ -d "$dirgit" ] && rm -rf "$dirgit"
-            read -p 'Enter git url repository: ' -r url
-            git clone "$url" "$dirgit" && ( if [ -d "$dirgit" ]; then
-                cd "$dirgit"
-                makepkg -scfi
-            fi)
-            [ -d "$dirgit" ] && rm -rf "$dirgit"
-            unset url dirgit
-            print_prompt "$(gettext 'Installation from git repo finished')."
+            install_git_aur "$choix"
+            read
             ;;
         23)
             echo
