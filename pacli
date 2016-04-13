@@ -28,12 +28,16 @@
 #################################################################
 
 pkgname=pacli
-pacli_desc='/tmp/pacli-desc'
+
+unset NOCLEAR
 
 # user parameters, default values in paclirc
 declare -A PARAMS=(
     ['helpred']="1"       # show help for red command by default
     ['cancellist']=1      # add "CANCEL" string on fzf list
+    ['menuex']=1          # touch [m] show main menu fzf
+    ['hook']=1            # display descriptions after install - upgrade
+    ['boxcolor']=''       # theme color
 )
 
 # load tools functions
@@ -41,15 +45,63 @@ libfile='./lib/pacli-tools.sh'
 [ -f "$libfile" ] || libfile="/usr/lib/${pkgname}/pacli-tools.sh"
 . "$libfile"
 
+# load user config
+load_user_params
+
 ########    menu    ########
 
 # set colors
-RED='\e[31m'
-NC='\e[0m'
+declare -r RED='\e[31m'
+declare -r BOLD='\e[1m'
+declare -r NC='\e[0m'
+
+type -t gettext &> /dev/null || { gettext() { echo "$@"; }; }
+
+declare -a MENUS=(
+    "┌─┐"
+    "1:$(gettext 'Update System')"
+    "2:$(gettext 'Clean System')"
+    "3:$(gettext 'Install Package')"
+    "4:$(gettext 'Remove Package + Deps')"
+    "5:$(gettext 'Package Information')"
+    "6:$(gettext 'List Local Package Files')"
+    "7:$(gettext 'Dependency Tree')"
+    "8:$(gettext 'Reverse Dependency Tree')"
+    "└─┘"
+    "┌─┐"
+    "9:$(gettext 'Defragment Database')"
+    "10:$(gettext 'Help')"
+    "11:$(gettext 'Downgrade Packages')"
+    "12:$(gettext 'Pacman Log')"
+    "13:$(gettext 'Fix Errors'):$RED"
+    "14:$(gettext 'Configure Pacman'):$RED"
+    "15:$(gettext 'Force Install Package'):$RED"
+    "16:$(gettext 'Force Update System'):$RED"
+    "17:$(gettext 'Force Remove Package'):$RED"
+    "18:$(gettext 'Empty Package Cache'):$RED"
+    "└─┘"
+    ""
+    "┌─┐"
+    "19:$(gettext 'Update AUR')"
+    "20:$(gettext 'Force Update AUR')"
+    "21:$(gettext 'Search+Install from AUR')"
+    "22:$(gettext 'Install from AUR')"
+    "23:$(gettext 'List Installed from AUR')"
+    "24:$(gettext 'Configure ')Yaourt"
+    "└─┘"
+    #extend menu, dont show >49
+    "120:$(gettext 'Pacman history')"
+)
+readonly MENUS
 
 #width menu -3
-declare WMENU=68
-((WMENU %2 )) && ((WMENU++))
+declare -i WMENU=68
+
+# param for parse option in command line
+unset LOCAL
+
+LG=${LANG:0:2}
+declare -r pacli_desc='/tmp/pacli-desc'
 
 ########    functions    ########
 
@@ -134,8 +186,15 @@ pactree_reverse()
 
 ########   main    ########
 
-while true; do
-    menu_show
+get_is_local
+
+# set $PROMPT
+menu_calculate_size "$(gettext 'Enter a number between 0..%s and press [Enter] - 0 Exit Pacli')"
+
+main()
+{
+  while true; do
+    menu_show "$screen_buffer"
     read choix
     case $choix in
         1)
@@ -367,5 +426,12 @@ while true; do
             clear
             ;;
     esac
-done
-exit 0
+  done
+}
+
+if [ "${BASH_SOURCE[0]}" == "$0" ]; then
+    load_packages_infos
+    #make home screen
+    declare -r screen_buffer=$(menu_load)
+    main
+fi

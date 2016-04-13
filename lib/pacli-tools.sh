@@ -4,8 +4,33 @@ shopt -s extglob
 
 ########   config    ########
 
+# secure load user params with trim(value) - not the command "source"
+load_user_params() {
+    declare file="$HOME/.config/${pkgname}rc"
+    declare key value
+    [ -f "$file" ] || return 1
+    while IFS='=' read  key value; do
+        key="${key%%*( )}"
+        if [ -n "$key" ]; then
+            value="${value%%*( )}"
+            PARAMS[$key]="${value##*( )}"
+        fi
+    done < <(grep -v "^#" "${file}")
+    [ -n "${PARAMS[boxcolor]}" ] && PARAMS[boxcolor]="\e[${PARAMS[boxcolor]}"
+    readonly PARAMS
+}
+
+get_is_local() {
+    if [ -f "./pacli.help" ]; then
+        LOCAL=1
+    else
+        unset LOCAL
+    fi
+}
+
 # show text file created by hook if exist
 print_hook() {
+    (("${PARAMS['hook']}" != 1)) && return 0
     if [ -f "${pacli_desc}" ]; then
         sudo cat "${pacli_desc}"
         sudo rm -f "${pacli_desc}"
@@ -18,18 +43,22 @@ print_hook() {
 
 # params : "┌─┐" or "└─┘"
 menu_sep() {
-    local bar=''
+    if [[ -z "$1" ]]; then
+        echo ""
+        return 0
+    fi
+    declare bar='' 
+    declare -i i
     for (( i=1; i<=$WMENU; i++ )); do
         bar="${bar}${1:1:1}"
     done
-    echo -e " ${1:0:1}${bar}${1:2:1}"
+    echo -e " ${PARAMS[boxcolor]}${1:0:1}${bar}${1:2:1}$NC"
 }
 
 # params <id> <text> <color>
 menu_item() {
-    local id="${1}" color="${3:-$NC}" txt="${2}"
-    local colorend="$NC"
-    local w=$(( (WMENU/2)-8  ))
+    declare -i w=$(( (WMENU/2)-8  ))
+    declare id="${1}" color="${3:-$NC}" txt="${2}" colorend="$NC"
     #for unicode
     txt="${txt}                                                        "
     [[ "$color" == "$RED" ]] && colorend=''
@@ -38,39 +67,90 @@ menu_item() {
 
 # params <id> <txt> <color> <id> <txt> <color>
 menu_items() {
-    local c1=$(menu_item "$1" "$2" "$3")
-    local c2=$(menu_item "$4" "$5" "$6")
-    printf " │  %s %s $NC│\n" "$c1" "$c2"
+    declare c1=$(menu_item "$1" "$2" "$3")
+    declare c2=$(menu_item "$4" "$5" "$6")
+    printf " ${PARAMS[boxcolor]}│$NC  %s %s $NC${PARAMS[boxcolor]}│$NC\n" "$c1" "$c2"
 }
 
-menu_show()
+# calculate WMENU minimum from items or prompt
+# menu_calculate_size <PROMPT: string>
+# use : MENUS: array
+# return WMENU
+# return PROMPT string
+# return last_id for prompt menu
+menu_calculate_size() {
+    declare -g PROMPT=''
+    declare -ig last_id=0
+    declare -i item_long=0 l=0 ww=0
+    declare line item datas
+
+    declare IFS=$'\n'
+    for line in "${MENUS[@]}"; do
+        datas=( ${line//:/$'\n' } )
+        if [[ "${datas[0]}" =~ [0-9] ]]; then
+            #extend menu, dont show
+            (("${datas[0]}">49))  && continue
+            item=${datas[1]}
+            id=${datas[0]}
+            l="${#item}"
+            ((l > item_long )) && item_long=$l
+            ((id > last_id )) && last_id=$id
+        fi
+    done
+    (( ww=(item_long+9)*2 ))   # add number and spaces
+    ((ww %2 )) && ((ww++))
+    WMENU=$ww
+
+    #from prompt ?
+    PROMPT=$(printf "$1" "$last_id")
+    l=${#PROMPT}
+    if (( l > WMENU )); then
+        WMENU=$l
+        ((WMENU %2 )) && ((WMENU++))
+    fi
+    readonly WMENU
+    readonly last_id
+    readonly PROMPT
+}
+
+# parse array and transform it to str
+# user MENUS array
+menu_load()
 {
-    clear
-    echo ""
-    printf "$NC%s$NC" "                      ::Pacli - Package manager::"
-    echo ""
-    menu_sep "┌─┐"
-    menu_items "1" "Update System" "$NC"        "2" "Clean System"
-    menu_items "3" "Install Package" "$NC"        "4" "Remove Package + Deps"
-    menu_items "5" "Package Information" "$NC"        "6" "List Local Package Files"
-    menu_items "7" "Dependency Tree " "$NC"        "8" "Reverse Dependency Tree"
-    menu_sep "└─┘"
-    menu_sep "┌─┐"
-    menu_items "9" "Defragment Database" "$NC"        "10" "Help"
-    menu_items "11" "Downgrade Packages" "$NC"        "12" "Pacman Log"
-    menu_items "13" "Fix Errors" "$RED"             "14" "Configure Pacman" "$RED"
-    menu_items "15" "Force Install Package" "$RED"  "16" "Force Update System" "$RED"
-    menu_items "17" "Force Remove Package" "$RED"   "18" "Empty Package Cache" "$RED"
-    menu_sep "└─┘"
-    echo ""
-    menu_sep "┌─┐"
-    menu_items "19" "Update AUR" "$NC"                  "20" "Force Update AUR"
-    menu_items "21" "Search + Install from AUR" "$NC"   "22" "Install from AUR"
-    menu_items "23" "List Installed from AUR" "$NC"    "24" "Configure Yaourt"
-    menu_sep "└─┘"
-    echo ""
-    printf "$NC%s$NC $NC%s$NC\n" "   Enter a number between 0 and 24 and press [Enter]" "- 0 Exit Pacli"
-    echo ""
+    declare line
+    declare -a item=() datas=()
+    declare IFS=$'\n'
+    for line in "${MENUS[@]}"; do
+        datas=($(echo "${line//:/$'\n'}"))
+
+        if [[ ! "${datas[0]}" =~ [0-9] ]]; then
+            #one separator
+            if [ -n "$item" ]; then
+                menu_items "${item[0]}" "${item[1]}" "${item[2]}"  "" "" ""
+                unset item
+            fi
+            menu_sep "${datas[0]}"
+            continue
+        fi
+
+        #extend menu, dont show
+        (("${datas[0]}">49))  && continue
+
+        # if we want a blanck at right ?
+        if [[ -n "$item" ]] && (( datas[0] % 2 )); then
+            menu_items "${item[0]}" "${item[1]}" "${item[2]}"  "" "" ""
+            item=($(echo "${line//:/$'\n'}"))
+            continue
+        fi
+
+        if [ -z "$item" ]; then
+            item=($(echo "${line//:/$'\n'}"))
+        else
+            menu_items "${item[0]}" "${item[1]}" "${item[2]}"  "${datas[0]}" "${datas[1]}" "${datas[2]}"
+            unset item
+        fi
+
+    done
 }
 
 # mcenter <text>
@@ -125,6 +205,40 @@ print_enter()
     else
         return 1
     fi
+}
+
+# show in main menu all items (id>49)
+# input_mnu <label>
+input_mnu()
+{
+    declare -a choice=()
+    declare line datas ret
+    declare IFS=$'\n'
+    for line in "${MENUS[@]}"; do
+        datas=( ${line//:/$'\n' } )
+        if [[ "${datas[0]}" =~ [0-9] ]]; then
+            choice=("$(echo -e "${datas[1]} (${datas[0]})\n${choice[@]}")")
+        fi
+    done
+    ret=$(fzf-tmux -e --exit-0 --tac --prompt="$1 >" <<< "$choice" | awk -F'(' '{print $2}' )
+    if (($?==0)); then
+        [[ "$ret" == "" ]] && return 1
+        echo "${ret%?}"
+    else
+        return 1
+    fi
+}
+
+#show main menu  <menu_buffer:string in option>
+menu_show()
+{
+    ((NOCLEAR)) || clear
+    echo ""
+    printf "\n$NC%s$NC" "$(mcenter '::Pacli - Package manager::')"
+    echo ""
+    [ -z "$1" ] && menu_load || echo -e "$1"
+    echo ""
+    printf "\n$NC%s$NC\n" "$(mcenter $PROMPT)"
 }
 
 
