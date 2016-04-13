@@ -4,6 +4,14 @@ shopt -s extglob
 
 ########   config    ########
 
+# show text file created by hook if exist
+print_hook() {
+    if [ -f "${pacli_desc}" ]; then
+        sudo cat "${pacli_desc}"
+        sudo rm -f "${pacli_desc}"
+    fi
+}
+
 
 ########    menu    ########
 
