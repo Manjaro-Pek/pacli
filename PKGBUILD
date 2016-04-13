@@ -19,6 +19,7 @@ optdepends=('update-notifier: Automatically get notified when updates are availa
     'pacman-mirrors: provides all mirrors for Manjaro'
     'reflector: retrieve and filter the latest Pacman mirror list')
 source=("git://github.com/Manjaro-Pek/$pkgname")
+#source=("$pkgname::git+https://github.com/papajoker/pacli#branch=develop")
 md5sums=('SKIP')
 
 package () {
@@ -35,4 +36,8 @@ package () {
     for lg in {fr,fr}; do   #for lg in {fr,de,it,sp}; do
         install -Dm644 "pacli.$lg.help" "$pkgdir/usr/share/doc/$pkgname/$lg.help"
     done
+    mkdir -p $pkgdir/usr/share/locale/{de,fr,pl}/LC_MESSAGES/
+    for lg in {fr,fr}; do   #for lg in {fr,de,it,pl,sp}; do
+        msgfmt "locale/$lg.po" -o "$pkgdir/usr/share/locale/$lg/LC_MESSAGES/$pkgname.mo"
+    done    
 }
