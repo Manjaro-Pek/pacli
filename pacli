@@ -55,6 +55,37 @@ load_packages_infos()
     wget -P /tmp/aur/ https://aur.archlinux.org/packages.gz >/dev/null 2>&1 && gunzip -f /tmp/aur/packages.gz && cat /tmp/aur/packages >> /tmp/packages &
 }
 
+########    PACTREE    ########
+
+#7
+pactree_run()
+{
+    declare pkg=$(print_enter "$(gettext 'Select a package')" "$(pacman -Slq)" )
+    (($?!=0)) && return 1
+    [ -z "$pkg" ] && return 1
+    #declare option='s' AUR or NOT ?
+    pactree -c${option} "${pkg}" 2>/dev/null
+    print_prompt "$(gettext 'Dependency tree displayed')." "" 1
+}
+
+#8
+pactree_reverse()
+{
+    declare pkg=$(print_enter "$(gettext 'Select a package')" "$(pacman -Qq)" )
+    (($?!=0)) && return 1
+    [ -z "$pkg" ] && return 1
+    declare ret=($(pactree -cr "${pkg}"))
+    if (( "${#ret[@]}" > 1 )); then
+        echo -e "${ret[*]}"
+        print_prompt "$(gettext 'Reverse dependency tree displayed')." "" 1
+    else
+        #((NOCLEAR)) || clear
+        declare p=$(printf "$(gettext 'Package "%s" not used by other package')." "$pkg")
+        print_prompt "$p"
+    fi
+}
+
+
 
 ########   main    ########
 
@@ -133,19 +164,11 @@ while true; do
             ;;
         7)
             echo
-            pkg=$(print_enter "$(gettext 'Select a package')" "$(pacman -Slq)" )
-            (($?!=0)) && continue
-            [ -z "$pkg" ] && continue
-            pactree -c "${pkg}" 2>/dev/null
-            print_prompt "$(gettext 'Dependency tree displayed')." "" 1
+            pactree_run "$choix"
             ;;
         8)
             echo
-            declare pkg=$(print_enter "$(gettext 'Select a package')" "$(pacman -Qq)" )
-            (($?!=0)) && continue
-            [ -z "$pkg" ] && continue
-            pactree -cr "${pkg}" 2>/dev/null
-            print_prompt "$(gettext 'Reverse dependency tree displayed')." "" 1
+            pactree_reverse "$choix"
             ;;
         9)
             echo
