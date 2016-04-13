@@ -28,6 +28,21 @@ get_is_local() {
     fi
 }
 
+# read console args for debug/tests
+get_options() {
+    ((LOCAL)) || return 1
+    #only for test
+    unset TESTMENU
+    while getopts tw:l: option; do
+        case $option in
+            w) WMENU="$OPTARG";;
+            l) LG="${OPTARG:0:2}";;
+            t) NOCLEAR=1;;
+        esac
+    done
+    # end get params for test
+}
+
 # show text file created by hook if exist
 print_hook() {
     (("${PARAMS['hook']}" != 1)) && return 0

@@ -339,6 +339,7 @@ pactree_reverse()
 ########   main    ########
 
 get_is_local
+get_options "$@"
 
 # set $PROMPT
 menu_calculate_size "$(gettext 'Enter a number between 0..%s and press [Enter] - 0 Exit Pacli')"
