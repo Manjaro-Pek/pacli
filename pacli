@@ -30,6 +30,12 @@
 pkgname=pacli
 pacli_desc='/tmp/pacli-desc'
 
+# user parameters, default values in paclirc
+declare -A PARAMS=(
+    ['helpred']="1"       # show help for red command by default
+    ['cancellist']=1      # add "CANCEL" string on fzf list
+)
+
 # load tools functions
 libfile='./lib/pacli-tools.sh'
 [ -f "$libfile" ] || libfile="/usr/lib/${pkgname}/pacli-tools.sh"
@@ -243,15 +249,18 @@ while true; do
             print_prompt "$(gettext 'Pacman history')." "" 1
             ;;
         13)
+            help_text 13 "${PARAMS['helpred']}" || continue
             echo
             fix_errors "$choix"
             ;;
         14)
+            help_text 14 "${PARAMS['helpred']}" || continue
             echo
             [[ -z "$EDITOR" ]] && EDITOR='nano'
             sudo $EDITOR /etc/pacman.conf
             ;;
         15)
+            help_text 15 "${PARAMS['helpred']}" || continue
             echo
             pkg=$(print_enter "$(gettext 'Select package to install ')" "$(pacman -Slq)" )
             (($?!=0)) && continue
@@ -261,11 +270,13 @@ while true; do
             print_prompt "$(gettext 'Package installation in force mode is finished')." "" 1
             ;;
         16)
+            help_text 16 "${PARAMS['helpred']}" || continue
             echo
             sudo pacman -Syu --force --color always
             print_prompt "$(gettext 'Your system is updated in force mode')." "" 1
             ;;
         17)
+            help_text 15 "${PARAMS['helpred']}" || continue
             echo
             pkg=$(print_enter "$(gettext 'Select packages to remove')" "$(pacman -Qq)" )
             (($?!=0)) && continue
@@ -275,6 +286,7 @@ while true; do
             print_prompt "$(gettext 'Dependency in force mode removed')." "" 1
             ;;
         18)
+            help_text 15 "${PARAMS['helpred']}" || continue
             echo
             yaourt -Scc
             print_prompt "$(gettext 'Entire package cache emptied')."

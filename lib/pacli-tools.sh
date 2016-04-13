@@ -114,8 +114,10 @@ print_prompt()
 print_enter()
 {
     declare ret="" choice=("$2") cancel
-    cancel=("** $(gettext 'CANCEL OR ESC TOUCH')")
-    choice=("$(echo -e "${cancel}\n$2")")
+    if (("${PARAMS['cancellist']}"==1)); then
+        cancel=("** $(gettext 'CANCEL OR ESC TOUCH')")
+        choice=("$(echo -e "${cancel}\n$2")")
+    fi
     ret=$(fzf-tmux -e $3 --reverse --exit-0 --prompt="$1 >" <<< "$choice" | awk '{print $1}' )
     if (($?==0)); then
         [[ "$ret" == "**" ]] && return 1
