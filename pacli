@@ -173,17 +173,25 @@ fix_errors()
         [ -z "$mybranch" ] && mybranch='stable'
         version="$(lang=C pacman -Si gnupg | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
         url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
-        wget "${url}" && sudo pacman -U "gnupg${version}-${arch}.pkg.tar.xz" && sudo rm "gnupg${version}-${arch}.pkg.tar.xz"
+        wget "${url}" && \
+            sudo pacman -U "gnupg${version}-${arch}.pkg.tar.xz" && \
+            sudo rm "gnupg${version}-${arch}.pkg.tar.xz"
 
         version="$(lang=C pacman -Si archlinux-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
         url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/archlinux-keyring${version}-any.pkg.tar.xz"
-        wget "${url}" && sudo pacman -U "archlinux-keyring${version}-any.pkg.tar.xz" && sudo rm "archlinux-keyring${version}-any.pkg.tar.xz"
+        wget "${url}" && \
+            sudo pacman -U "archlinux-keyring${version}-any.pkg.tar.xz" && \
+            sudo rm "archlinux-keyring${version}-any.pkg.tar.xz"
 
         version="$(lang=C pacman -Si manjaro-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
         url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/manjaro-keyring${version}-any.pkg.tar.xz"
-        wget "${url}" && sudo pacman -U "manjaro-keyring${version}-any.pkg.tar.xz" && sudo rm "manjaro-keyring${version}-any.pkg.tar.xz"
+        wget "${url}" && \
+            sudo pacman -U "manjaro-keyring${version}-any.pkg.tar.xz" && \
+            sudo rm "manjaro-keyring${version}-any.pkg.tar.xz"
 
-        sudo pacman-key --init && sudo pacman-key --populate archlinux manjaro
+        echo "pacman-key --init"
+        sudo pacman-key --init && \
+            echo "pacman-key --populate ..." && sudo pacman-key --populate archlinux manjaro
     elif [[ -f "/usr/bin/reflector" ]]; then
         sudo reflector --verbose -l 4 -p http --sort rate --save /etc/pacman.d/mirrorlist && "${cmd[@]}"
         sudo pacman -Sy gnupg archlinux-keyring && sudo rm -r /etc/pacman.d/gnupg && sudo pacman-key --init && sudo pacman-key --populate archlinux && sudo pacman-key --refresh-keys
@@ -311,11 +319,11 @@ run_pacnews ()
 #7
 pactree_run()
 {
-    declare pkg=$(print_enter "$(gettext 'Select a package')" "$(pacman -Slq)" )
+    declare pkg=$(print_enter "$(gettext 'Select a package')" "$(pacman -Qq)" )
     (($?!=0)) && return 1
     [ -z "$pkg" ] && return 1
     declare option='s'
-    (helper_islocal) && option=''  # AUR
+    ((helper_islocal==0)) && option=''  # AUR
     pactree -c${option} "${pkg}" 2>/dev/null
     print_prompt "$(gettext 'Dependency tree displayed')." "" 1
 }
