@@ -373,8 +373,11 @@ main()
             paccache -ruvk0
             paccache -rvk2
 			
-			disk=$(df --output="source,target" | grep "/$" | cut -c 6-8 )
-			[[ $(cat $(find /sys -name "rotational" 2>/dev/null | grep "$disk/queue")) == "1" ]] && sudo pacman-optimize
+			disk=$(lsblk -o "name,mountpoint" -pa | sed -n '/^\//h;/\/$/{g;p}' | cut -d/ -f3)
+			if [[ -n "$disk" && -e "/dev/disk" ]]; then
+                [[ $(cat $(find /sys -name "rotational" 2>/dev/null | grep "$disk/queue")) == "1" ]] \
+                    && sudo pacman-optimize
+			fi
 			unset disk
 			
 			echo
