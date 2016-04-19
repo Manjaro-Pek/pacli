@@ -326,9 +326,9 @@ pactree_reverse()
     declare pkg=$(print_enter "$(gettext 'Select a package')" "$(pacman -Qq)" )
     (($?!=0)) && return 1
     [ -z "$pkg" ] && return 1
-    declare ret=($(pactree -cr "${pkg}"))
-    if (( "${#ret[@]}" > 1 )); then
-        echo -e "${ret[*]}"
+    declare ret=$(pactree -cr "${pkg}")
+    if (( "$(echo "${ret}" | wc -l)" >1 )); then
+        echo -e  "${ret}"
         print_prompt "$(gettext 'Reverse dependency tree displayed')." "" 1
     else
         #((NOCLEAR)) || clear
