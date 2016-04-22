@@ -1,0 +1,391 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-04-13 16:27+0200\n"
+"PO-Revision-Date: 2016-03-14 17:15+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.7\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../pacli:67
+msgid "Update System"
+msgstr "Mise à jour du Système"
+
+#: ../pacli:68
+msgid "Clean System"
+msgstr "Nettoyer le Système"
+
+#: ../pacli:69
+msgid "Install Package"
+msgstr "Installer un Paquet"
+
+#: ../pacli:70
+msgid "Remove Package + Deps"
+msgstr "Supprimer un Paquet + déps"
+
+#: ../pacli:71
+msgid "Package Information"
+msgstr "Informations sur un Paquet"
+
+#: ../pacli:72
+msgid "List Local Package Files"
+msgstr "Lister les fichiers d'un Paquet"
+
+#: ../pacli:73
+msgid "Dependency Tree"
+msgstr "Arbre de Dépendances"
+
+#: ../pacli:74
+msgid "Reverse Dependency Tree"
+msgstr "Arbre de Dépendances Inversé"
+
+#: ../pacli:77
+msgid "Defragment Database"
+msgstr "Défragmenter la Base"
+
+#: ../pacli:78
+msgid "Help"
+msgstr "Aide"
+
+#: ../pacli:79
+msgid "Downgrade Packages"
+msgstr "Rétrograder un Paquet"
+
+#: ../pacli:80
+#, fuzzy
+msgid "Pacman Log"
+msgstr "Historique Pacman"
+
+#: ../pacli:81
+msgid "Fix Errors"
+msgstr "Réparer les Erreurs"
+
+#: ../pacli:82
+msgid "Configure Pacman"
+msgstr "Configurer Pacman"
+
+#: ../pacli:83
+msgid "Force Install Package"
+msgstr "Forcer l'installation d'un paquet"
+
+#: ../pacli:84
+msgid "Force Update System"
+msgstr "Forcer la mise à jour Système"
+
+#: ../pacli:85
+msgid "Force Remove Package"
+msgstr "Forcer la suppression d'un paquet"
+
+#: ../pacli:86
+msgid "Empty Package Cache"
+msgstr "Vider le cache"
+
+#: ../pacli:90
+msgid "Update AUR"
+msgstr "Mise à jour de AUR"
+
+#: ../pacli:91
+msgid "Force Update AUR"
+msgstr "Forcer la mise à jour AUR"
+
+#: ../pacli:92
+msgid "Search+Install from AUR"
+msgstr "Chercher-Installer depuis AUR"
+
+#: ../pacli:93
+msgid "Install from AUR"
+msgstr "Installer depuis AUR"
+
+#: ../pacli:94
+msgid "List Installed from AUR"
+msgstr "Lister des Paquets Locaux"
+
+#: ../pacli:95
+#, fuzzy
+msgid "Configure "
+msgstr "Configurer "
+
+#: ../pacli:98
+msgid "Informations"
+msgstr ""
+
+#: ../pacli:99
+msgid "Manage .pacnews files"
+msgstr ""
+
+#: ../pacli:100 ../pacli:451
+msgid "Pacman history"
+msgstr "Historique Pacman"
+
+#: ../pacli:101
+msgid "Install from git repository"
+msgstr ""
+
+#: ../pacli:117
+msgid "helper not supported"
+msgstr "Outil non supporté"
+
+#: ../pacli:139
+msgid "Select a package to display information about"
+msgstr "Sélectionner un paquet pour informations"
+
+#: ../pacli:146
+msgid "Package information displayed"
+msgstr "Informations du paquet affichées"
+
+#: ../pacli:153
+msgid "Select a packages of which to list all files (use TAB to toggle selection)"
+msgstr "Sélectionner les paquets à lister (TAB pour sélection multiple)"
+
+#: ../pacli:158
+msgid "All local files in package listed"
+msgstr "Fichiers du paquet listés"
+
+#: ../pacli:195
+msgid "Most common Pacman errors fixed and system updated"
+msgstr ""
+
+#: ../pacli:205
+msgid "Enter git url repository"
+msgstr "Entrer l'url du dépôt git"
+
+#: ../pacli:228
+msgid "Error: "
+msgstr "Erreur: "
+
+#: ../pacli:228
+msgid "not AUR repot"
+msgstr "pas un dépôt AUR"
+
+#: ../pacli:232
+msgid "Installation from git repo finished"
+msgstr "Installation via un dépôt git terminée"
+
+#: ../pacli:261 ../pacli:264
+msgid "Server"
+msgstr "Serveur"
+
+#: ../pacli:263
+msgid "Branch"
+msgstr "Branche"
+
+#: ../pacli:265
+#, fuzzy
+msgid "Last update"
+msgstr "Dernière mise à jour"
+
+#: ../pacli:268
+#, fuzzy
+msgid "Packages"
+msgstr "Installer un paquet"
+
+#: ../pacli:270
+msgid "Total installed"
+msgstr "Installée en tout"
+
+#: ../pacli:271
+msgid "Explicitly installed"
+msgstr "Explicitement installées"
+
+#: ../pacli:273
+msgid "Orphans"
+msgstr "orphelins"
+
+#: ../pacli:274
+msgid "Available"
+msgstr "Disponibles"
+
+#: ../pacli:275
+msgid "Available with AUR"
+msgstr "Disponible via AUR"
+
+#: ../pacli:280
+msgid "Pacman config files"
+msgstr "Fichiers config modifiés par Pacman"
+
+#: ../pacli:282
+msgid "PacNew files"
+msgstr "Fichiers .Pacnew"
+
+#: ../pacli:283
+msgid "PacSave files"
+msgstr "Fichiers .pacsave"
+
+#: ../pacli:287
+msgid "Pacli Config"
+msgstr "Configuration Pacli"
+
+#: ../pacli:289
+msgid "help before red "
+msgstr "Aide avant une commande rouge"
+
+#: ../pacli:290
+msgid "extend menu"
+msgstr "Manu étendu"
+
+#: ../pacli:291
+msgid "cancel in list"
+msgstr "Annulé dans la liste"
+
+#: ../pacli:292
+msgid "show descriptions"
+msgstr "Afficher les descriptions"
+
+#: ../pacli:297
+msgid "General Informations"
+msgstr "Informations générales"
+
+#: ../pacli:314 ../pacli:326
+msgid "Select a package"
+msgstr "Sélectionner un paquet"
+
+#: ../pacli:320
+msgid "Dependency tree displayed"
+msgstr "Arbre de dépendances affiché"
+
+#: ../pacli:332
+msgid "Reverse dependency tree displayed"
+msgstr "Arbre de dépendances inversé affiché"
+
+#: ../pacli:335
+msgid "Package \"%s\" not used by other package"
+msgstr "Paquet \"%s\" pas utilisé par un autre paquet"
+
+#: ../pacli:348
+msgid "Enter a number between 0..%s and press [Enter] - 0 Exit Pacli"
+msgstr "Entrer un numéro entre 0..%s et presser [Entrer] - 0 pour Quitter Pacli"
+
+#: ../pacli:367 ../pacli:499
+msgid "Your system is updated"
+msgstr "Votre système est à jour"
+
+#: ../pacli:382
+msgid "System is updated and cache is cleaned"
+msgstr "Système est à jour et le cache est vidé"
+
+#: ../pacli:386
+msgid "Select packages to install (use TAB to toggle selection)"
+msgstr "Sélectionner les paquets à installer (TAB pour sélection multiple)"
+
+#: ../pacli:392
+msgid "Package installation is finished"
+msgstr "Installation du Paquet terminée"
+
+#: ../pacli:396
+msgid "Select packages to remove (use TAB to toggle selection)"
+msgstr "Sélectionner les paquets à supprimer (TAB pour sélection multiple)"
+
+#: ../pacli:401
+msgid "Package and all unneeded dependencies removed"
+msgstr ""
+
+#: ../pacli:423
+msgid "Pacman Database defragmented and optimized for HDDs"
+msgstr ""
+
+#: ../pacli:432
+msgid "Select package to downgrade"
+msgstr "Sélectionner un paquet à rétrograder"
+
+#: ../pacli:437
+msgid "Downgrade process finished"
+msgstr "Processus de Downgrade terminée"
+
+#: ../pacli:442
+msgid "Last 2000 lines of Pacman Log displayed. Navigate with SHIFT+PageUp"
+msgstr ""
+
+#: ../pacli:446
+msgid "Select package"
+msgstr "Sélectionner un paquet"
+
+#: ../pacli:467
+msgid "Select package to install "
+msgstr "Sélectionner un paquet à installer"
+
+#: ../pacli:472
+msgid "Package installation in force mode is finished"
+msgstr "Installation de force terminée"
+
+#: ../pacli:478
+msgid "Your system is updated in force mode"
+msgstr "Système mis à jour de force"
+
+#: ../pacli:483
+msgid "Select packages to remove"
+msgstr "Sélectionner un paquet à supprimer"
+
+#: ../pacli:488
+msgid "Dependency in force mode removed"
+msgstr "Dépendances supprimées de force"
+
+#: ../pacli:494
+msgid "Entire package cache emptied"
+msgstr "Cache entièrement vidé"
+
+#: ../pacli:504
+msgid "All AUR packages reinstalled"
+msgstr "paquets AUR réinstallés"
+
+#: ../pacli:508
+msgid "not exist with pacaur ????"
+msgstr ""
+
+#: ../pacli:517
+msgid "AUR Helper finished"
+msgstr "Commande AUR terminée"
+
+#: ../pacli:521
+msgid "Select packages to install (toggle selection with TAB)"
+msgstr "Sélectionner un paquet à installer (TAB pour sélection multiple)"
+
+#: ../pacli:527
+msgid "Installation from AUR finished"
+msgstr "Installation AUR terminée"
+
+#: ../pacli:537
+msgid "All locally installed packages listed"
+msgstr "Paquets locaux listés"
+
+#: ../pacli:569 ../lib/pacnew.sh:132
+msgid "Wrong option"
+msgstr "Mauvaise option"
+
+#: ../pacli:570 ../lib/pacnew.sh:133
+msgid "Wait and try again later..."
+msgstr "Réessayer à nouveau..."
+
+#: ../lib/pacli-tools.sh:191
+msgid "To return to pacli press [Enter]"
+msgstr "Pour revenir à Pacli presser la touche [entrer]"
+
+#: ../lib/pacli-tools.sh:193
+msgid "To return to pacli Press any key"
+msgstr "Pour revenir à Pacli presser une touche"
+
+#: ../lib/pacli-tools.sh:213
+msgid "CANCEL OR ESC TOUCH"
+msgstr "ANNULER OU TOUCHE ESC"
+
+#: ../lib/pacli-tools.sh:340
+msgid "To continue to pacli press [Enter], To return enter [q] and press [Enter]"
+msgstr "Pour continuer presser [entrer], pour quitter entrer [q] et la touche [entrer]"
+
+#: ../lib/pacnew.sh:90
+msgid "Pacnews"
+msgstr ""
+
+#~ msgid "Enter name of package to be searched and installed from AUR and press [Enter] to continue"
+#~ msgstr "Entrer le nom du paquet à rechercher et l'installer depuis AUR; presser [entrer pour continuer]"

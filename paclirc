@@ -1,0 +1,24 @@
+#pacli user configuration 
+#$HOME/.config/paclirc
+
+# helpred show help before red command; default 1
+helpred=1
+
+# extend fzf menu; default 1
+menuex=1
+
+# add cancel in select lists
+cancellist=1
+
+# helper : yaourt or pacaur
+#helper=yaourt
+
+# hook descriptions
+#hook=1
+
+# pacnew editor (default $EDITOR) with kdesu or gksu
+#peditor=kompare
+#peditor=diffuse
+
+# color frame : 0m null , 1m bold, 32m green 33m yellow ...
+#boxcolor=32m
