@@ -37,31 +37,23 @@ pacli
 ```
 
 ### Manual Installation
-First, make sure all dependencies of pacli are installed on your system:
-- pacman
-- [yaourt](https://wiki.archlinux.org/index.php/Yaourt)
-- [fzf](https://aur.archlinux.org/packages/fzf/)
-- [downgrade](https://aur.archlinux.org/packages/downgrade/)
-- bash
-- sudo
-- gzip
-- git
-- [update-notifier](https://github.com/Chrysostomus/update-notifier) (optional dependency - will notify the user about available updates)
-
-Then, clone this Github repository to your system with the command:
-```
-git clone https://github.com/Manjaro-Pek/pacli
-```
-and execute pacli:
-```
-cd pacli && chmod +x pacli && ./pacli
-```
+This installation method is no longer available.
 
 
 ## Configuration
 
 pacli accepts the following config file:
 $HOME/.config/paclirc
+A default version of this file is available in this github repository.
+
+
+## Hidden Options
+
+There are some hidden Options available without documentation:
+- 100: Shows system information
+- 111: Let's you manage .pacnew files
+- 120: Shows pacman history
+- 220: Let's you install directly from git repository
 
 
 ## Help
