@@ -1,0 +1,204 @@
+Witaj na stronie pomocy Pacli.
+
+Pacli to interaktywny menedżer pakietów do użycia z linii komend. Zapewnia łatwy w użyciu interfejs, pod maską używa Pacman oraz Yaourt. Dodatkowo, używa też kilku komend dostępnych tylko w Manjaro. Pacli oferuje łatwy dostęp do najczęściej używanych komend służących do zarządzania pakietami. Opcje, które mogą być niebezpieczne dla systemu, oznaczone są kolorem czerwonym.
+
+Po stronie pomocy można poruszać się za pomocą Strzałek, klawiszy PageUp PageDown, lub za pomocą kółka myszy.
+
+Poniżej dostępne są szczegółowe opisy dla kazdej opcji, którą oferuje Pacli:
+
+**EKRAN GŁÓWNY**
+Ekran główny Pacli jest podzielony na trzy części:
+Pierwsza część skupia się na aktualizacjach, instalowaniu i usuwaniu pakietów z repozytoriów Manjaro. Zawiera także użyteczne narzędzia dla tych akcji.
+Część druga zawiera zaawansowane opcje do optymalizacji i naprawy systemu. Opcje, które mogą zaszkodzić systemowi oznaczone są kolorem czerwonym.
+Ostatnia część oferuje opcje do zarządzania AUR - Arch User Repository.
+
+Wybierz opcję wpisując odpowiadający jej numer i wciśnij [Enter].
+Jeśli chcesz uzyskać pomoc dla konkretnej opcji, wpisz jej numer oraz literę h i wciśnij [Enter]. Przykładowo: "11h" (bez cudzysłowia) wyświetli pomoc dla opcji 11.
+
+
+**0 - WYJŚCIE Z PACLI**
+"clear && exit"
+Czyści terminal i wychodzi z Pacli.
+
+
+**1 - AKTUALIZACJA SYSTEMU**
+"sudo pacman -Syu"
+Ta komenda porównuje listę wszystkich zainstalowanych pakietów z bazą pakietów dostępnych na mirrorach/serwerach Manjaro. Jeśli nowsze pakiety zostaną odszukane, będą one pobrane i zainstalowane w systemie. 
+
+
+**2 - CZYSZCZENIE SYSTEMU**
+"sudo pacman-mirrors -g && sudo pacman -Syy"
+Ta komenda testuje połączenia do wszystkich dostępnych mirrorów z repozytoriami Manjaro. Mirror z najszybszym połączeniem zostanie automatycznie wybrany. Dodatkowo, zostanie pobrana najświeższa baza pakietów z wybranego mirrora.
+Jeśli chcesz przyspieszyć tę komendę: Testuj tylko połączenia z serwerami położonymi najbliżej. Na przykład: Jeśli wiesz, że najlepsze pingi mają zazwyczaj serwery z Francji i Niemiec, możesz uruchomić polecenie: "sudo pacman-mirrors -g -c Germany,France"
+
+"yaourt -Qdt"
+Ta opcja wypisuje wszystkie osierocone pakiety obecne w systemie. Osierocone pakiety to takie, które zostały zainstalowane jako zależności, i nie zostały usunięte z systemu po usunięciu pakietu głównego.
+Odpowiedz "y" aby usunąć wszystkie wypisane osierocone pakiety. Wciśnięcie [ENTER] nie usuwa pakietów.
+
+"paccache -ruvk0
+ paccache -rvk2"
+Domyślnie Pacman przechowuje pobrane pakiety w katalogu: /var/cache/pacman/pkg/... . Pakiety nie są usuwane automatycznie po pobraniu. To pozwala na ZAINSTALOWANIE STARSZEJ WERSJI PAKIETU, który nie działa prawidłowo, nawet bez działającego połączenia internetowego. Katalog gdzie pacman przechowuje pakiety może się rozrosnąć do bardzo dużych rozmiarów. Czyszcząc go odzyskujemy miejsce na partycji głównej. 
+Pierwsza komenda usuwa z katalogu wszystkie pakiety które już nie są zainstalowane w systemie. Druga komenda usuwa wszystkie stare pakiety oprócz 2 ostatnich wersji: wersji obecnie zainstalowanej w systemie oraz poprzedniej.
+
+"sudo pacman-optimize" (tylko jeśli Manjaro jest zainstalowane na HDD)
+Ta komenda defragmentuję bazę danych Pacmana.
+Może to przyspieszyć wszystkie akcje związane z Pacmanem, w przypadku gdy Manjaro jest zainstalowane na tradycyjnym dysku twardym.
+Uwaga: NIE zaleca się używania tej komendy na nowych dyskach SSD!
+
+
+**3 - INSTALACJA PAKIETU**
+"sudo pacman -S NAZWA_PAKIETU"
+Ta opcja pobiera i instaluje NAZWA_PAKIETU w systemie. NAZWA_PAKIETU misi być pakietem z repozytoriów Manjaro.
+Ta opcja wykorzystuje fzf, co znacza że możesz wyszukiwać pakiety.
+
+
+**4 - USUWANIE PAKIETU + ZALEŻNOSCI**
+"sudo pacman -Rsn NAZWA_PAKIETU"
+Ta komenda usuwa NAZWA_PAKIETU wraz z wszystkimi zależnościami, które nie są potrzebne przez inne pakiety zainstalowane w systemie. Kopia NAZWA_PAKIETU zostanie zachowana w katalogu z cache: Uruchom CZYSZCZENIE SYSTEMU aby ją usunąć.
+Zauważ, że katalogi konfiguracyjne utworzone przez program NAZWA_PAKIETU nie zostaną usunięte z systemu. Poszukaj tych katalogów w następujących miejscach i usuń je ręcznie:
+~/
+~/.config/
+~/.local/share/
+
+
+**5 - INFORMACJE O PAKIECIE**
+"yaourt -Sii NAZWA_PAKIETU" lub "yaourt -Qii NAZWA_PAKIETU"
+To polecenie wyświetla całkiem sporo informacji o NAZWA_PAKIETU. Różne części informacji są pokazywane w zależności od źródła skąd zainstalowano pakiet (repozytorium Manjaro lub AUR) a także stanu pakietu (zainstalowany lub nie).
+
+
+**6 - LISTUJ PLIKI ZAINSTALOWANYCH PAKIETÓW**
+"pacman -Ql NAZWA_PAKIETU"
+Ta komenda wyświetla listę plików należących do NAZWA_PAKIETU. NAZWA_PAKIETU musi być zainstalowany w systemie.
+Czy kiedyś zdażyło ci się zainstalować program i nie wiedzieć za pomocą jakiego polecenia go uruchomić? Po prostu spójrz na listę plików w katalogu /usr/bin/ używając LISTUJ PLIKI ZAINSTALOWANYCH PAKIETÓW.
+
+
+**7 - DRZEWO ZALEŻNOSCI**
+"pactree -s NAZWA_PAKIETU"
+To polecenie wyświetla kompletną listę zależności NAZWA_PAKIETU. Zależności są to pakiety wymagane przez NAZWA_PAKIETU, aby mógł działać. Gdy instalujesz NAZWA_PAKIETU, wszystkie jego zależności zostają także zainstalowane.
+Uwaga: Drzewo zależności może być długie i kompleksowe dla pakietów jak np. "firefox".
+
+
+**8 - ODWRÓCONE DRZEWO ZALEŻNOŚCI**
+"pactree -r NAZWA_PAKIETU"
+To polecenie wyświetla drzewo pakietów, które zależą od NAZWA_PAKIETU. Innymi słowy: Wszystkie pokazane pakiety wymagają do prawidłowego działania NAZWA_PAKIETU.
+Użyj tej komendy, jeśli chcesz się dowiedzieć dlaczego nie możesz usunąć danego pakietu z systemu.
+
+
+**9 - DEFRAGMENTACJA BAZY DANYCH**
+"sudo pacman-optimize"
+Ta komenda efektywnie defragmentuje bazę danych Pacmana. Zaleca się wcześniej wykonać CZYSZCZENIE SYSTEMU.
+Na tradycyjnych twardych dyskach (HDD) to polecenie może przyspieszyć działanie Pacmana. NIE zaleca się stosowania tej komendy na nowych dyskach (SSD)!
+
+
+**10 - POMOC**
+Wyświetla stronę pomocy.
+Jeśli chcesz uzyskać pomoc na temat pojedyńczej opcji, wpisz jej numer oraz literę h i wciśnij [ENTER]. Przykład: "11h" (bez cudzysłowia) wyświetli pomoc do opcji numer 11.
+
+
+**11 - INSTALOWANIE STARSZEJ WERSJI PAKIETU**
+"downgrade NAZWA_PAKIETU"
+Manjaro jest dystrybucją ciągłą, korzysta z modelu rozwoju zwanego "rolling release". To oznacza, że WSZYSTKIE pakiety w systemie są na bieżąco aktualizowane do najnowszej wersji. Jeśli najnowsza wersja jakiegoś pakietu nie działa, możesz zainstalować starszą, działającą wersję.
+Ta komenda odinstalowywuje NAZWA_PAKIETU i oferuje listę starszych wersji NAZWA_PAKIETU do wyboru. Ta lista zawiera wszystkie starsze wersje NAZWA_PAKIETU dostępne w cache oraz repozytoriach online (jeśli masz działające połączenie internetowe).
+
+Po udanej instalacji starszej wersji, możesz dodać NAZWA_PAKIETU do listy ignorowanych. Dzięki temu Pacman nie będzie pokazywał dostępnych aktualizacji dla NAZWA_PAKIETU. Usunięcia NAZWA_PAKIETU z listy ignorowanych możesz dokonać za pomocą opcji KONFIGURACJA PACMANA.
+Możesz także uruchamiać następne aktualizacje za pomocą komendy "sudo pacman -Syu --ignore NAZWA_PAKIETU" dopóki poprawiona wersja NAZWA_PAKIETU nie będzie dostępna.
+
+
+**12 (120) - LOGI PACMAN-A**
+"tail -2000 /var/log/pacman.log"
+Komenda ta wyświetla ostatnie 2000 linii logów Pacmana.
+Logi Pacmana zawierają informację o wszelkich aktualizacjach, instalacjach czy usuwaniu pakietów, które dokonujesz. Gdy kiedykolwiek coś posuje się w systemie (np. po aktualizacji), i nie pamiętasz jakie pakiety były instalowane/aktualizowane, możesz sprawdzić logi Pacmana. A następnie skorzystać z opcji INSTALOWANIE STARSZEJ WERSJI PAKIETU, gdy podejrzewasz, że dany pakiet sprawia problkemy.
+Po liście logów można poruszać się za pomocą kółka myszy lub SHIFT + PageUp.
+
+Ukryta opcja 120 pozwala na filtrowanie logów za pomocą fzf.
+
+
+!!13 - NAPARAWIANIE BŁĘDÓW!!
+Kilka poleceń, które mogą pomóc naprawić błędy, które czasem przytrafiają się przy korzystaniu z Pacmana:
+
+"sudo rm -f /var/lib/pacman/db.lck" 
+Ta komenda usuwa plik blokady bazy Pacmana.
+Uwaga: Użyj tej komendy gdy masz pewność, że żadna inna instancja Pacmana nie jest uruchomiona (jak np. Pacman, Yaourt, Pamac, Octopi, PacmanXG4, ...).
+
+"sudo pacman-mirrors -g && sudo pacman -Syy"
+Następnie wyszukiwany jest najlepszy serwer/mirror udostępniający repozytoria Manjaro (sudo pacman-mirrors -g).
+W końcu (sudo pacman -Syy) - to polecenie wymusza pobranie najnowszej bazy dostępnych pakietów z wcześniej wybranego najlepszego serwera. Następnie wszystkie zainstalowane pakiety są porównywane z najnowszymi dostępnymi wersjami. Jeśli dostępna jest nowsza wersja, zostanie pobrana i zainstalowana w systemie. Jeśli zainstalowany pakiet jest nowszy niż ostatnia dostępna wersja w repozytorium, zostanie on "zdeaktualizowany. Takie zachowanie zapewnia że pakiety w systemie zawsze są takie same jak te w repozytoriach, nawet jeśli dopiero co  przełączysz się z gałęzi unstable do stable.
+
+"sudo rm -r /etc/pacman.d/gnupg && sudo pacman -Sy gnupg archlinux-keyring manjaro-keyring && sudo pacman-key --init && sudo pacman-key --populate archlinux manjaro"
+Ten zestaw poleceń resetuje zestaw kluczy GPG dla Pacmana, Archa i Manjaro oraz zapewnia, że są one aktualne. Takie problemy zdarzają się na przykład gdy pakiety zaczyna tworzyć nowy developer.
+Uwaga: Ta komenda może trwać dosyć długo. Jeśli wydaje się że system się zatrzymał, oczekuje on na entropię, aby wygenerować klucze. W trakim przypadku warto otworzyć przeglądarkę internetową i poklikać lub powciskać parę klawiszy. To pomoże szybciej wygenerować potrzebną entropię. 
+Uwaga: Jeśli chcesz wykonać to polecenie manualnie na systemie w którym występuje problem z kluczmi, komenda "pacman -Sy gnupg archlinux-keyring manjaro-keyring" nie zdadziała! W takim przypadku połącz się za pomocą przeglądarki www z mirrorem Manjaro, pobierz pakiety i zainstaluj je lokalnie. 
+
+"sudo pacman -Syyuu"
+To polecenie wymusza pobranie najnowszej bazy dostępnych pakietów z wcześniej wybranego najlepszego serwera. Następnie wszystkie zainstalowane pakiety są porównywane z najnowszymi dostępnymi wersjami. Jeśli dostępna jest nowsza wersja, zostanie pobrana i zainstalowana w systemie. Jeśli zainstalowany pakiet jest nowszy niż ostatnia dostępna wersja w repozytorium, zostanie on "zdeaktualizowany. Takie zachowanie zapewnia że pakiety w systemie zawsze są takie same jak te w repozytoriach, nawet jeśli dopiero co  przełączysz się z gałęzi unstable do stable.
+
+!!14 - KONFIGURACJA PACMANA!!
+"sudo $EDITOR /etc/pacman.conf"
+To polecenie ostwiera plik konfiguracyjny w domyślnym edytorze dla termiala. Pozwala skonfigurować wiele ustawień, jak np. polecenie używane do pobierania pakietów, jakie repozytoria są używane, jakie pakiety mają być ignorowane.
+
+
+!!15 - WYMUSZENIE INSTALACJI PAKIETU!!
+"sudo pacman -S --force NAZWA_PAKIETU"
+Polecenie wymusza instalację pakietu.
+
+
+!!16 - WYMUSZENIE AKTUALIZACJI SYSTEMU!!
+"sudo pacman -Syu --force"
+To polecenie robi to samo co AKTUALIZACJA SYSTEMU, ale pomija testy na konflikty plików i nadpisuje te pliki. Wszystkie pliki zostaną nadpisane.
+
+
+!!17 - WYMUSZENIE USUNIĘCIA PAKIETU!!
+"pacman -Rdd NAZWA_PAKIETU"
+Polecenie wymusza usunięcie NAZWA_PAKIETU bez sprawdzania jego zależności. Pozwala to zaawansowanym użytkownikom na usunięcie pakietów bądź zależności. Komenda usuwa z systemu jedynie NAZWA_PAKIETU. Wszystkie zależności oraz osierocone poakiety pozostają w systemie: uruchom CZYSZCZENIE SYSTEMU aby je również usunąć.
+Uwaga: To polecenie może popsuć pakiety w systemie lub nawet popsuć cały system.
+
+
+!!18 - WYCZYSZCZENIE CACHE PAKIETÓW!!
+"yaourt -Scc"
+Ta komenda usuwa WSZYSTKIE pakiety z cache (/var/cache/pacman/pkg).
+Uwaga: Spowoduje to że nie będzie możliwa reinstalacja lub INSTALACJA STARSZEJ WERSJI PAKIETU bez działającego połączenia internetowego.
+
+
+**19 - AKTUALIZACJA AUR**
+"yaourt -Syua"
+To polecenie robi to samo co AKTUALIZACJA SYSTEMU z jednym wyjątkiem: aktualizuje również wszystkie pakiety z Arch User Repository (AUR), dla których dostepny jest zaktualizowany plik PKGBUILD.
+Uwaga: Często zdarza się, że nowa wersja pakietu z AUR pojawia się, a plik PKGBUILD nie jest zaktualizowany. Jeśli chcesz zainstalować najnowszą wersję pakietu z AUR, zainstaluj go ponownie za pomoc opcji INSTALUJ Z AUR. Jeśli chcesz zainstalować najnowsze wersje wszystkich pakietów z AUR - użyj opcji WYMUSZENIE AKTUALIZACJI AUR.
+
+
+**20 - WYMUSZENIE AKTUALIZACJI AUR**
+"yaourt -Syua && yaourt -Syua --devel --noconfirm"
+Arch User Repository (Repozytorium Użytkowników Arch, w skrócie AUR) jest repozytorium zawierającym (głównie) pliki PKGBUILD. Każdy może stworzyć taki plik PKGBUILD i umieścić go w AUR. Plik PKGBUILD zawiera proste instrukcje jak np. skąd pobrać kod źródłowy, jakie zależności są potrzebne, gdzie skopiować pliki podczas instalacji, itp. Yaourt jest nazywany pomicnikiem AUR: umie interpretować pliki PKGBUILD, pobierać kod źródłowy, instalować zależności, kompilować źródła i kopiować pliki w odpowiednie miejsce (instalować).
+Sprawdzając plik PKGBUILD (oraz plik .INSTALL) możesz się upewnić, że źródła są pobierane z oficjalnego serwera, nie będą instalowane żadne dziwne zależności a instrukcje instalacji nie zawierają złośliwego kodu.
+Pliki PKGBUILD zawierają zmienne (np. wersja programu) w adresie do pobierania kodu źródłowego; to powoduje że pobierana jest zawsze najnowsza wersja (np. z Github). Niuektóre pliki PKGBUILD nie zawierają zmiennych; te wymagają edycji za każdym razem gdy pojawi się nowa wersja programu.
+Pierwsza komenda "yaourt -Syua" aktualizuje pakiety, których pliki PKGBUILD zostały zmienione. To pozwala na sprawdzenie zaktualizowanych plików PKGBUILD.
+Druga komenda "yaourt -Syua --devel --noconfirm" - wymusza ponowną instalację WSZYSTKICH pakietów z AUR. Flaga "--noconfirm" jest użyta w sposób bezpieczny, ponieważ żadne pliki PKGBUILD nie zostały zmienione od czasu wykonania poprzedniego kroku.
+Uwaga: To może zająć sporo czasu!
+Uwaga: Domyślnie, po każdych 15 minutach polecenie się zatrzyma i będzie ponownie prosić o podanie hasła.
+
+
+**21 - SZUKAJ + INSTALUJ Z AUR**
+"yaourt NAZWA_PAKIETU"
+To polecenie wyszukuje NAZWA_PAKIETU we wszystkich repozytoriach Manjaro orez w Arch User Repository (AUR). Wyszukuje w nazwach oraz opisach pakietów.
+Przykład: Możesz wyszukać "web browser" i odnajdziesz Firefoxa i inne przeglądarki www. Jedna lub więcej z odnalezionych pozycji może być zainstalowana.
+Jeśli chcesz opuścić tą opcję bez instalacji pakietów, po prostu wciśnij [ENTER].
+
+
+**22 (220) - INSTALUJ Z AUR**
+"yaourt -S NAZWA_PAKIETU"
+Polecenie robi to samo co INSTALACJA PAKIETU. Dodatkowo, mamy też dostęp do pakietów z Arch User Repository (AUR).
+Uwaga: Zaawansowani użytkownicy mogą instalować pakiety z AUR bez potrzeby odpowiadania na pytania, używając polecenia "yaourt -S NAZWA_PAKIETU --noconfirm". Flaga "--noconfirm" jest użyteczna gdy chcemy szybko zainstalować pakiety z AUR. Jednakże należy pamiętać, że pakiety dostępne w AUR mogą teoretycznie zawierać szkodliwy kod. Dlatego zaleca się, aby zawsze przeglądać pliki PKGBUILD oraz .INSTALL przed instalacją pakietów z AUR.
+
+Ukryta opcja 220 pozwala na instalację pakietów bezpośrednio z repozytoriów git.
+
+
+**23 - LISTA PAKIETÓW ZAINSTALOWANYCH Z AUR**
+"pacman -Qem"
+Polecenie wypisuje listę wszystkich pakietów zainstalowanych z AUR, bądź zainstalowanych ręcznie.
+
+
+**24 - KONFIGURUJ YAOURT**
+"$EDITOR $yaourtrc"
+Ta opcja powoduje otwarcie do edycji pliku konfiguracyjnego Yaourt w domyślnym dla terminala edytorze.
+
+
+Aby opuścić ekran pomocy, wciśnij "q".
