@@ -44,7 +44,8 @@ This installation method is no longer available.
 
 pacli accepts the following config file:
 $HOME/.config/paclirc
-A default version of this file is available in this github repository.
+
+A default version of this file is available in this github repository. In this config file you can tweak the behavior of pacli e.g. for using pacaur instead of yaourt.
 
 
 ## Hidden Options
