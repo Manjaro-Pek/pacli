@@ -167,28 +167,30 @@ fix_errors()
     if [ -f "/usr/bin/pacman-mirrors" ]; then
         sudo pacman-mirrors -g && "${cmd[@]}"
 
-        sudo rm -r /etc/pacman.d/gnupg
+        sudo rm -r /etc/pacman.d/gnupg &>/dev/null
         arch=$(uname -m)
         mybranch=$(awk -F'=' '/^Branch/ {print $2}' /etc/pacman-mirrors.conf)
         [ -z "$mybranch" ] && mybranch='stable'
         version="$(lang=C pacman -Si gnupg | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
         url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
         wget "${url}" && \
-            sudo pacman -U "gnupg${version}-${arch}.pkg.tar.xz" && \
+            sudo pacman -U "gnupg${version}-${arch}.pkg.tar.xz" --noconfirm && \
             sudo rm "gnupg${version}-${arch}.pkg.tar.xz"
 
         version="$(lang=C pacman -Si archlinux-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
         url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/archlinux-keyring${version}-any.pkg.tar.xz"
         wget "${url}" && \
-            sudo pacman -U "archlinux-keyring${version}-any.pkg.tar.xz" && \
+            sudo pacman -U "archlinux-keyring${version}-any.pkg.tar.xz" --noconfirm && \
             sudo rm "archlinux-keyring${version}-any.pkg.tar.xz"
 
         version="$(lang=C pacman -Si manjaro-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
         url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/manjaro-keyring${version}-any.pkg.tar.xz"
         wget "${url}" && \
-            sudo pacman -U "manjaro-keyring${version}-any.pkg.tar.xz" && \
+            sudo pacman -U "manjaro-keyring${version}-any.pkg.tar.xz" --noconfirm && \
             sudo rm "manjaro-keyring${version}-any.pkg.tar.xz"
 
+        # the following command sometimes prevents an error connecting to the key server		
+        sudo dirmngr </dev/null
         echo "pacman-key --init"
         sudo pacman-key --init && \
             echo "pacman-key --populate ..." && sudo pacman-key --populate archlinux manjaro
@@ -199,7 +201,8 @@ fix_errors()
         "${cmd[@]}"
     fi
 
-    sudo pacman -Syyuu --color always
+    sudo pacman -Sc --noconfirm
+    sudo pacman -Syyuu --color always --noconfirm
     print_prompt "$(gettext 'Most common Pacman errors fixed and system updated')." "" 1
 }
 
