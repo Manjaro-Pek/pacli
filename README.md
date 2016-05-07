@@ -51,9 +51,9 @@ A default version of this file is available in this github repository. In this c
 ## Hidden Options
 
 There are some hidden Options available without documentation:
+- m: use different menu
 - 100: Shows system information
 - 111: Let's you manage .pacnew files
-- 120: Shows pacman history
 - 220: Let's you install directly from git repository
 
 

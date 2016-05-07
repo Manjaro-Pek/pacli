@@ -453,17 +453,8 @@ main()
             ;;
         12)
             echo
-            tail -2000 /var/log/pacman.log
+            tail -2000 /var/log/pacman.log | fzf -m -e +s -q alpm --tac --reverse --header="Navigate with PageUp / PageDown Keys. Cancel lists selection with CTRL+C or ESC." --prompt='Enter one or more filter terms > ' >> /tmp/pacli-log
             print_prompt "$(gettext 'Last 2000 lines of Pacman Log displayed. Navigate with SHIFT+PageUp')." "" 1
-            ;;
-        120):
-            echo
-            pkg=$(print_enter "$(gettext 'Select package')" "$(helper -Slq)" )
-            (($?!=0)) && continue
-            [ -z "$pkg" ] && continue
-            grep "\[ALPM\]" /var/log/pacman.log | grep " $pkg"
-            unset pkg
-            print_prompt "$(gettext 'Pacman history')." "" 1
             ;;
         13)
             help_text 13 "${PARAMS['helpred']}" || continue
@@ -515,7 +506,7 @@ main()
             ;;
         20)
             echo
-            helper -Syua && helper -Syua --devel --noconfirm
+            helper -Syua && helper -Syua --devel --needed --noconfirm
             print_prompt "$(gettext 'All AUR packages reinstalled')." "" 1
             ;;
         21)

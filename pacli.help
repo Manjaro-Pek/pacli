@@ -106,13 +106,10 @@ After a successful downgrade, you can add <PACKAGE NAME> to your ignore list. Th
 Alternatively, you can run future updates with the command "sudo pacman -Syu --ignore <PACKAGE NAME>" until a fixed version of <PACKAGE NAME> gets released.
 
 
-**12 (120) - PACMAN LOG**
+**12 - PACMAN LOG**
 "tail -2000 /var/log/pacman.log"
-This command displays the last 2000 lines of your Pacman Log.
+This command displays the last 2000 lines of your Pacman Log and makes it searchable with fzf. Please note that all selected lines (toggle selection with your TAB key) will get added to file /tmp/pacli-log.
 The Pacman Log contains all updates, installations, and removals (also in the AUR) you have done. Whenever something breaks on your system (e.g. after an udpate), but you do not remember anymore which packages were changed recently (e.g. during the update), take a look at your Pacman Log and find out. Then, DOWNGRADE PACKAGES, which you think might be broken.
-Navigate the list with your Mouse Wheel or SHIFT + PageUp.
-
-The hidden option 120 let's you filter your complete Pacman Log with fzf.
 
 
 !!13 - FIX ERRORS!!
@@ -181,7 +178,7 @@ The Arch User Repository (AUR) is a repository of (mostly) PKGBUILD files. Every
 By checking a PKGBUILD file (and .INSTALL file) you can make sure the source code is loaded from an official download server, no harmful dependencies get installed, and the installation instructions do not contain harmful code.
 A lot of PKGBUILD files contain variables (e.g. program version) in download addresses; this makes them download always the latest source code (e.g. from Github). Some PKGBUILD files contain no variables: These PKGBUILD files need to be changed manually every time a new program version is released.
 The first command of FORCE UPDATE AUR does the same as UPDATE AUR: Only AUR packages with updated/changed PKGBUILD files will get updated. This gives you the chance to check these updated/changed PKGBUILD files. 
-The second command of FORCE UPDATE AUR forces a reinstall of ALL your AUR packages. The "--noconfirm" flag is used in a secure way, because no PKGBUILD files have changed since the first command got executed.
+The second command of FORCE UPDATE AUR forces a reinstall of all your AUR packages, which have an updated source package available (e.g. a new commit on github). The "--noconfirm" flag is used in a secure way, because no PKGBUILD files have changed since the first command got executed.
 Attention: This might take a long time!
 Attention: By default, after every 15min this command will pause and ask again for your password.
 
