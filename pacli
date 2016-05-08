@@ -453,8 +453,7 @@ main()
             ;;
         12)
             echo
-            tail -2000 /var/log/pacman.log | fzf -m -e +s -q alpm --tac --reverse --header="Navigate with PageUp / PageDown Keys. Cancel lists selection with CTRL+C or ESC." --prompt='Enter one or more filter terms > ' >> /tmp/pacli-log
-            print_prompt "$(gettext 'Last 2000 lines of Pacman Log displayed. Navigate with SHIFT+PageUp')." "" 1
+			$(print_enter "$(gettext 'Enter one or more filter terms')" "$(tail -2000 /var/log/pacman.log)" '-m +s -q alpm --tac' ) >> /tmp/pacli-log			
             ;;
         13)
             help_text 13 "${PARAMS['helpred']}" || continue
