@@ -2,7 +2,7 @@
 
 pkgname=pacli
 pkgver=0.9.1
-pkgrel=1
+pkgrel=2
 pkgdesc="An interactive pacman interface using fzf"
 arch=(any)
 url="https://github.com/Manjaro-Pek/$pkgname"
@@ -35,8 +35,9 @@ package () {
     for lg in {fr,fr}; do   #for lg in {fr,de,it,sp}; do
         install -Dm644 "pacli.$lg.help" "$pkgdir/usr/share/doc/$pkgname/$lg.help"
     done
-    mkdir -p $pkgdir/usr/share/locale/{de,fr,pl}/LC_MESSAGES/
-    for lg in {fr,fr}; do   #for lg in {fr,de,it,pl,sp}; do
+    mkdir -p $pkgdir/usr/share/locale/{de,fr,pl,it}/LC_MESSAGES/
+    #for lg in {fr,fr}; do   
+    for lg in {fr,it,pl}; do
         msgfmt "locale/$lg.po" -o "$pkgdir/usr/share/locale/$lg/LC_MESSAGES/$pkgname.mo"
     done    
 }
