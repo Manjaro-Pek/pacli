@@ -161,7 +161,7 @@ package_list_files()
 #13    fix errors
 fix_errors()
 {
-    declare cmd url version arch
+    declare cmd url version arch mybranch
     sudo rm -f /var/lib/pacman/db.lck
     cmd=(sudo pacman -Syy)
     if [ -f "/usr/bin/pacman-mirrors" ]; then
@@ -169,7 +169,7 @@ fix_errors()
 
         sudo rm -r /etc/pacman.d/gnupg &>/dev/null
         arch=$(uname -m)
-        mybranch=$(awk -F'=' '/^Branch/ {print $2}' /etc/pacman-mirrors.conf)
+        mybranch=$(awk -F'=' '/^Branch/{gsub(" ","", $2 ); print $2}' /etc/pacman-mirrors.conf)
         [ -z "$mybranch" ] && mybranch='stable'
         version="$(lang=C pacman -Si gnupg | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
         url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
