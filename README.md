@@ -27,6 +27,10 @@ Looking up what packages on my system depend on "gtk2":
 
 
 ## Installation
+Pacli is the official repository Manjaro and can be installed with the following command:
+```
+sudo pacman -S pacli
+```
 
 ### Installation from the AUR
 Install [pacli from the AUR](https://aur.archlinux.org/packages/pacli/).
