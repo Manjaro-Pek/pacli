@@ -17,6 +17,7 @@ depends=('fzf'
 	'bash')
 makedepends=('git')
 optdepends=('update-notifier: Automatically get notified when updates are available')
+conflicts=('pacli-simple')
 source=("git://github.com/Manjaro-Pek/$pkgname")
 md5sums=('SKIP')
 
