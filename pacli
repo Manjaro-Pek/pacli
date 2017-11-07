@@ -124,7 +124,7 @@ libfile="./lib/helper-${PARAMS['helper']}.sh"
 load_packages_infos()
 {
     helper -Slq 2>/dev/null 1>/tmp/packages &
-    wget -P /tmp/aur/ https://aur.archlinux.org/packages.gz >/dev/null 2>&1 && gunzip -f /tmp/aur/packages.gz && cat /tmp/aur/packages >> /tmp/packages &
+    wget -P /tmp/aur/ https://aur.archlinux.org/packages.gz >/dev/null 2>&1 && cat /tmp/aur/packages.gz >> /tmp/packages &
 }
 
 ########    pacman    ######
