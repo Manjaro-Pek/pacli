@@ -362,6 +362,7 @@ main()
 {
   declare arg="$1"
   while true; do
+    unset pkg
     menu_show "$screen_buffer"
     choix="$(read_choice "$arg")"
     arg=''
@@ -400,11 +401,14 @@ main()
             echo
             pkg=($(print_enter "$(gettext 'Select packages to install (use TAB to toggle selection)')" \
                 "$(helper_listdesc)" '-m' ))
-            sudo pacman -S "${pkg[@]}" --color always
-            unset pkg
-            echo
-            print_hook
-            print_prompt "$(gettext 'Package installation is finished')." "" 1
+            if [[ ${#pkg[@]} > 0 ]]; then
+                sudo pacman -S "${pkg[@]}" --color always
+                echo
+                print_hook
+                print_prompt "$(gettext 'Package installation is finished')." "" 1
+            else
+                continue
+            fi
             ;;
         4)
             echo
@@ -448,7 +452,6 @@ main()
             (($?!=0)) && continue
             [ -z "$pkg" ] && continue
             downgrade "${pkg}"
-            unset pkg
             print_prompt "$(gettext 'Downgrade process finished')." "" 1
             ;;
         12)
@@ -473,7 +476,6 @@ main()
             (($?!=0)) && continue
             [ -z "$pkg" ] && continue
             sudo pacman -S --force "$pkg" --color always
-            unset pkg
             print_prompt "$(gettext 'Package installation in force mode is finished')." "" 1
             ;;
         16)
@@ -489,7 +491,6 @@ main()
             (($?!=0)) && continue
             [ -z "$pkg" ] && continue
             sudo pacman -Rdd "$pkg" --color always
-            unset pkg
             print_prompt "$(gettext 'Dependency in force mode removed')." "" 1
             ;;
         18)
@@ -528,7 +529,6 @@ main()
             (($?!=0)) && continue
             [ -z "$pkg" ] && continue
             helper -S "${pkg[*]}"
-            unset pkg
             print_prompt "$(gettext 'Installation from AUR finished')." "" 1
             ;;
         220)
