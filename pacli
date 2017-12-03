@@ -27,6 +27,11 @@
 #                       http://polr.me/pacli1                   #
 #################################################################
 
+# Adapted and improved for use in ArchLabs
+# all credit to the original creators
+# Thank you so much for pacli :)
+
+
 pkgname=pacli
 
 unset NOCLEAR
@@ -158,45 +163,52 @@ package_list_files()
     print_prompt "$(gettext 'All local files in package listed')." "" 1
 }
 
-#13    fix errors
+#13  fix errors
 fix_errors()
 {
-    declare cmd url version arch mybranch
+    declare cmd url version arch keys
     sudo rm -f /var/lib/pacman/db.lck
     cmd=(sudo pacman -Syy)
-    if [ -f "/usr/bin/pacman-mirrors" ]; then
-        sudo pacman-mirrors -g && "${cmd[@]}"
+    keys=('AEFB411B072836CD48FF0381AE252C284B5DBA5D' '9E4F11C6A072942A7B3FD3B0B81EB14A09A25EB0' '35F52A02854DCCAEC9DD5CC410443C7F54B00041')
 
+    if hash reflector >/dev/null 2>&1 && [[ $(source /etc/os-release; echo $ID) ==  "ArchLabs" ]]; then
+
+        sudo reflector --verbose --score 100 --fastest 25 --sort rate --save /etc/pacman.d/mirrorlist && "${cmd[@]}"
         sudo rm -r /etc/pacman.d/gnupg &>/dev/null
+
         arch=$(uname -m)
-        mybranch=$(awk -F'=' '/^Branch/{gsub(" ","", $2 ); print $2}' /etc/pacman-mirrors.conf)
-        [ -z "$mybranch" ] && mybranch='stable'
         version="$(lang=C pacman -Si gnupg | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-        url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
+        url="http://mirror.pseudoform.org/core/os/${arch}/gnupg${version}-${arch}.pkg.tar.xz"
         wget "${url}" && \
             sudo pacman -U "gnupg${version}-${arch}.pkg.tar.xz" --noconfirm && \
             sudo rm "gnupg${version}-${arch}.pkg.tar.xz"
 
         version="$(lang=C pacman -Si archlinux-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-        url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/archlinux-keyring${version}-any.pkg.tar.xz"
+        url="http://mirror.pseudoform.org/core/os/${arch}/archlinux-keyring${version}-any.pkg.tar.xz"
         wget "${url}" && \
             sudo pacman -U "archlinux-keyring${version}-any.pkg.tar.xz" --noconfirm && \
             sudo rm "archlinux-keyring${version}-any.pkg.tar.xz"
 
-        version="$(lang=C pacman -Si manjaro-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
-        url="http://mirror.netzspielplatz.de/manjaro/packages/${mybranch}/core/${arch}/manjaro-keyring${version}-any.pkg.tar.xz"
-        wget "${url}" && \
-            sudo pacman -U "manjaro-keyring${version}-any.pkg.tar.xz" --noconfirm && \
-            sudo rm "manjaro-keyring${version}-any.pkg.tar.xz"
-
-        # the following command sometimes prevents an error connecting to the key server
         sudo dirmngr </dev/null
         echo "pacman-key --init"
-        sudo pacman-key --init && \
-            echo "pacman-key --populate ..." && sudo pacman-key --populate archlinux manjaro
-    elif [[ -f "/usr/bin/reflector" ]]; then
-        sudo reflector --verbose -l 4 -p http --sort rate --save /etc/pacman.d/mirrorlist && "${cmd[@]}"
-        sudo pacman -Sy gnupg archlinux-keyring && sudo rm -r /etc/pacman.d/gnupg && sudo pacman-key --init && sudo pacman-key --populate archlinux && sudo pacman-key --refresh-keys
+        sudo pacman-key --init && sudo pacman-key --populate archlinux
+
+        for key in "${keys[@]}"; do
+            gpg --receive-keys $key
+            sudo pacman-key -r $key
+        done
+        
+        version="$(lang=C pacman -Si archlabs-keyring | awk -F':' ' /^Ver/ {print $2}' | sed 's# #-#' | head -n 1 )"
+        url="https://github.com/ARCHLabs/archlabs_repo/raw/master/${arch}/archlabs-keyring${version}-any.pkg.tar.xz"
+        wget "${url}" && \
+            sudo pacman -U "archlabs-keyring${version}-any.pkg.tar.xz" --noconfirm && \
+            sudo rm "archlabs-keyring${version}-any.pkg.tar.xz"
+        sudo pacman-key --populate archlabs
+
+    elif hash reflector >/dev/null 2>&1; then
+        sudo reflector --verbose --score 100 --fastest 25 --sort rate --save /etc/pacman.d/mirrorlist && "${cmd[@]}"
+        sudo pacman -Sy gnupg archlinux-keyring && sudo rm -r /etc/pacman.d/gnupg && \
+            sudo pacman-key --init && sudo pacman-key --populate archlinux && sudo pacman-key --refresh-keys
     else
         "${cmd[@]}"
     fi
@@ -206,7 +218,7 @@ fix_errors()
     print_prompt "$(gettext 'Most common Pacman errors fixed and system updated')." "" 1
 }
 
-#220    Install from a repot git with a PKGBUILD file
+#220   Install from a git repo with a PKGBUILD file
 install_git_aur()
 {
     declare -r dirgit='/tmp/pacli-gits'
@@ -220,7 +232,7 @@ install_git_aur()
         nb=$(git branch -a | grep -Ev "\*|>" | wc -l)
         if ((nb>0)); then
             branch=$(git branch -a | grep -Ev "\*|>" | sed 's/\* //' | fzf-tmux -e --reverse --prompt='Select a branch >')
-            echo "branch choise: $branch"
+            echo "branch choice: $branch"
             branch=${branch##*/}
             echo "go to : $branch"
             git checkout "$branch" #$(echo "$branch" 1>/dev/null | sed "s/.* //" | sed "s#remotes/[^/]*/##")
@@ -236,7 +248,7 @@ install_git_aur()
             [[ -n "${url##*\/}" && -d "$dirgit/${url##*\/}" ]] && rm -rfv "$dirgit/${url##*\/}"
             makepkg -scfi
         else
-            echo "$(gettext 'Error: ') $(gettext 'not AUR repot')"
+            echo "$(gettext 'Error: ') $(gettext 'not AUR repo')"
         fi
     fi
     [ -d "$dirgit" ] && rm -rf "$dirgit"
@@ -246,26 +258,12 @@ install_git_aur()
 #100   info repo, branch, stats yaourt
 informations ()
 {
-    declare mybranch myrepo myurl testfile
+    declare myurl testfile
     declare -i pacnews=0 pacsaves=0
-    mybranch=$(awk -F'=' '/^Branch/ {print $2}' /etc/pacman-mirrors.conf)
-    [ -z "$mybranch" ] && mybranch='stable'
-    myrepo=$(awk -F'=' '/^Server/ {print $2}' /etc/pacman.d/mirrorlist | head -n 1)
-    if [ -f "/usr/bin/pacman-mirrors" ]; then
-        #Server = http://server.org/stable/$repo/$arch
-        myrepo=$(echo "$myrepo" | grep -Eo "http(.*)/$mybranch")
-        myurl=${myrepo/$mybranch/}
-        testfile='state'
-    else
-        # archlinux
-        #Server = http://server.org/$repo/os/$arch
-        myrepo=$(echo "$myrepo" | grep -o "http.*")
-        myurl=${myrepo%%'$'*}
-        testfile='lastupdate'
-    fi
-
+    mybranch='stable'
+    myurl=$(awk -F'=' '/^Server/ {print $2}' /etc/pacman.d/mirrorlist | head -n 1 | cut -d "$" -f 1 | tr -d "[:blank:]")
+    testfile='lastupdate'
     lastupdate=$(curl -s --head "${myurl}${testfile}" | awk -F': ' '/Last-Mo/ {print $2 }')
-
     pacnews=$(find '/etc' -name "*.pacnew" -type f 2>/dev/null | wc -l)
     pacsaves=$(find '/etc' -name "*.pacsave" -type f 2>/dev/null | wc -l)
 
@@ -278,20 +276,20 @@ informations ()
     #echo
     mcenter "$(gettext 'Packages')"
     menu_sep "┌─┐"
-    page_item "$(gettext 'Total installed')" "$(pacman -Qq | wc -l)" "" "r"
-    page_item "$(gettext 'Explicitly installed')" "$(pacman -Qenq | wc -l)" "$BOLD" "r"
-    page_item "AUR" "$(pacman -Qmq | wc -l)" "$BOLD" "r"
-    page_item "$(gettext 'Orphans')" "$(pacman -Qdttq | wc -l)" "$BOLD" "r"
-    page_item "$(gettext 'Available')" "$(pacman -Slq | wc -l)" "$BOLD" "r"
-    page_item "$(gettext 'Available with AUR')" "$(tac /tmp/packages | wc -l)" "$BOLD" "r"
+    page_item "$(gettext 'Total installed')" "$(pacman -Qq | wc -l)" ""
+    page_item "$(gettext 'Explicitly installed')" "$(pacman -Qenq | wc -l)" "$BOLD"
+    page_item "AUR" "$(pacman -Qmq | wc -l)" "$BOLD"
+    page_item "$(gettext 'Orphans')" "$(pacman -Qdttq | wc -l)" "$BOLD"
+    page_item "$(gettext 'Available')" "$(pacman -Slq | wc -l)" "$BOLD"
+    page_item "$(gettext 'Available with AUR')" "$(tac /tmp/packages | wc -l)" "$BOLD"
     menu_sep "└─┘"
 
     if ((pacnews>0 || pacsaves>0)); then
         #echo
         mcenter "$(gettext 'Pacman config files')"
         menu_sep "┌─┐"
-        ((pacnews>0)) &&  page_item "$(gettext 'PacNew files')" "$pacnews" "$BOLD" "r"
-        ((pacsaves>0)) && page_item "$(gettext 'PacSave files')" "$pacsaves" "$BOLD" "r"
+        ((pacnews>0)) &&  page_item "$(gettext 'PacNew files')" "$pacnews" "$BOLD"
+        ((pacsaves>0)) && page_item "$(gettext 'PacSave files')" "$pacsaves" "$BOLD"
         menu_sep "└─┘"
     fi
 
@@ -380,7 +378,7 @@ main()
             ;;
         2)
             echo
-            sudo pacman-mirrors -g && sudo pacman -Syy --color always
+            sudo reflector --verbose --score 100 --fastest 25 --sort rate --save /etc/pacman.d/mirrorlist && sudo pacman -Syy --color always
             helper -Qdt
             paccache -ruvk0
             paccache -rvk2

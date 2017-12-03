@@ -1,6 +1,8 @@
+
 Witaj na stronie pomocy Pacli.
 
-Pacli to interaktywny menedżer pakietów do użycia z linii komend. Zapewnia łatwy w użyciu interfejs, pod maską używa Pacman oraz Yaourt. Dodatkowo, używa też kilku komend dostępnych tylko w Manjaro. Pacli oferuje łatwy dostęp do najczęściej używanych komend służących do zarządzania pakietami. Opcje, które mogą być niebezpieczne dla systemu, oznaczone są kolorem czerwonym.
+Pacli to interaktywny menedżer pakietów do użycia z linii komend. Zapewnia łatwy w użyciu interfejs, pod maską używa Pacman oraz Yaourt. Dodatkowo, używa też kilku komend dostępnych tylko w ArchLabs. 
+Pacli oferuje łatwy dostęp do najczęściej używanych komend służących do zarządzania pakietami. Opcje, które mogą być niebezpieczne dla systemu, oznaczone są kolorem czerwonym.
 
 Po stronie pomocy można poruszać się za pomocą Strzałek, klawiszy PageUp PageDown, lub za pomocą kółka myszy.
 
@@ -8,7 +10,7 @@ Poniżej dostępne są szczegółowe opisy dla kazdej opcji, którą oferuje Pac
 
 **EKRAN GŁÓWNY**
 Ekran główny Pacli jest podzielony na trzy części:
-Pierwsza część skupia się na aktualizacjach, instalowaniu i usuwaniu pakietów z repozytoriów Manjaro. Zawiera także użyteczne narzędzia dla tych akcji.
+Pierwsza część skupia się na aktualizacjach, instalowaniu i usuwaniu pakietów z repozytoriów ArchLabs. Zawiera także użyteczne narzędzia dla tych akcji.
 Część druga zawiera zaawansowane opcje do optymalizacji i naprawy systemu. Opcje, które mogą zaszkodzić systemowi oznaczone są kolorem czerwonym.
 Ostatnia część oferuje opcje do zarządzania AUR - Arch User Repository.
 
@@ -23,13 +25,13 @@ Czyści terminal i wychodzi z Pacli.
 
 **1 - AKTUALIZACJA SYSTEMU**
 "sudo pacman -Syu"
-Ta komenda porównuje listę wszystkich zainstalowanych pakietów z bazą pakietów dostępnych na mirrorach/serwerach Manjaro. Jeśli nowsze pakiety zostaną odszukane, będą one pobrane i zainstalowane w systemie. 
+Ta komenda porównuje listę wszystkich zainstalowanych pakietów z bazą pakietów dostępnych na mirrorach/serwerach ArchLabs. Jeśli nowsze pakiety zostaną odszukane, będą one pobrane i zainstalowane w systemie. 
 
 
 **2 - CZYSZCZENIE SYSTEMU**
-"sudo pacman-mirrors -g && sudo pacman -Syy"
-Ta komenda testuje połączenia do wszystkich dostępnych mirrorów z repozytoriami Manjaro. Mirror z najszybszym połączeniem zostanie automatycznie wybrany. Dodatkowo, zostanie pobrana najświeższa baza pakietów z wybranego mirrora.
-Jeśli chcesz przyspieszyć tę komendę: Testuj tylko połączenia z serwerami położonymi najbliżej. Na przykład: Jeśli wiesz, że najlepsze pingi mają zazwyczaj serwery z Francji i Niemiec, możesz uruchomić polecenie: "sudo pacman-mirrors -g -c Germany,France"
+"sudo reflector --verbose --score 100 --fastest 25 --sort rate --save /etc/pacman.d/mirrorlist -g && sudo pacman -Syy"
+Ta komenda testuje połączenia do wszystkich dostępnych mirrorów z repozytoriami ArchLabs. Mirror z najszybszym połączeniem zostanie automatycznie wybrany. Dodatkowo, zostanie pobrana najświeższa baza pakietów z wybranego mirrora.
+Jeśli chcesz przyspieszyć tę komendę: Testuj tylko połączenia z serwerami położonymi najbliżej. Na przykład: Jeśli wiesz, że najlepsze pingi mają zazwyczaj serwery z Francji i Niemiec, możesz uruchomić polecenie: "sudo reflector --verbose --score 100 --fastest 25 --sort rate --save /etc/pacman.d/mirrorlist -g -c Germany,France"
 
 "yaourt -Qdt"
 Ta opcja wypisuje wszystkie osierocone pakiety obecne w systemie. Osierocone pakiety to takie, które zostały zainstalowane jako zależności, i nie zostały usunięte z systemu po usunięciu pakietu głównego.
@@ -40,15 +42,15 @@ Odpowiedz "y" aby usunąć wszystkie wypisane osierocone pakiety. Wciśnięcie [
 Domyślnie Pacman przechowuje pobrane pakiety w katalogu: /var/cache/pacman/pkg/... . Pakiety nie są usuwane automatycznie po pobraniu. To pozwala na ZAINSTALOWANIE STARSZEJ WERSJI PAKIETU, który nie działa prawidłowo, nawet bez działającego połączenia internetowego. Katalog gdzie pacman przechowuje pakiety może się rozrosnąć do bardzo dużych rozmiarów. Czyszcząc go odzyskujemy miejsce na partycji głównej. 
 Pierwsza komenda usuwa z katalogu wszystkie pakiety które już nie są zainstalowane w systemie. Druga komenda usuwa wszystkie stare pakiety oprócz 2 ostatnich wersji: wersji obecnie zainstalowanej w systemie oraz poprzedniej.
 
-"sudo pacman-optimize" (tylko jeśli Manjaro jest zainstalowane na HDD)
+"sudo pacman-optimize" (tylko jeśli ArchLabs jest zainstalowane na HDD)
 Ta komenda defragmentuję bazę danych Pacmana.
-Może to przyspieszyć wszystkie akcje związane z Pacmanem, w przypadku gdy Manjaro jest zainstalowane na tradycyjnym dysku twardym.
+Może to przyspieszyć wszystkie akcje związane z Pacmanem, w przypadku gdy ArchLabs jest zainstalowane na tradycyjnym dysku twardym.
 Uwaga: NIE zaleca się używania tej komendy na nowych dyskach SSD!
 
 
 **3 - INSTALACJA PAKIETU**
 "sudo pacman -S NAZWA_PAKIETU"
-Ta opcja pobiera i instaluje NAZWA_PAKIETU w systemie. NAZWA_PAKIETU misi być pakietem z repozytoriów Manjaro.
+Ta opcja pobiera i instaluje NAZWA_PAKIETU w systemie. NAZWA_PAKIETU misi być pakietem z repozytoriów ArchLabs.
 Ta opcja wykorzystuje fzf, co znacza że możesz wyszukiwać pakiety.
 
 
@@ -63,7 +65,7 @@ Zauważ, że katalogi konfiguracyjne utworzone przez program NAZWA_PAKIETU nie z
 
 **5 - INFORMACJE O PAKIECIE**
 "yaourt -Sii NAZWA_PAKIETU" lub "yaourt -Qii NAZWA_PAKIETU"
-To polecenie wyświetla całkiem sporo informacji o NAZWA_PAKIETU. Różne części informacji są pokazywane w zależności od źródła skąd zainstalowano pakiet (repozytorium Manjaro lub AUR) a także stanu pakietu (zainstalowany lub nie).
+To polecenie wyświetla całkiem sporo informacji o NAZWA_PAKIETU. Różne części informacji są pokazywane w zależności od źródła skąd zainstalowano pakiet (repozytorium ArchLabs lub AUR) a także stanu pakietu (zainstalowany lub nie).
 
 
 **6 - LISTUJ PLIKI ZAINSTALOWANYCH PAKIETÓW**
@@ -97,7 +99,7 @@ Jeśli chcesz uzyskać pomoc na temat pojedyńczej opcji, wpisz jej numer oraz l
 
 **11 - INSTALOWANIE STARSZEJ WERSJI PAKIETU**
 "downgrade NAZWA_PAKIETU"
-Manjaro jest dystrybucją ciągłą, korzysta z modelu rozwoju zwanego "rolling release". To oznacza, że WSZYSTKIE pakiety w systemie są na bieżąco aktualizowane do najnowszej wersji. Jeśli najnowsza wersja jakiegoś pakietu nie działa, możesz zainstalować starszą, działającą wersję.
+ArchLabs jest dystrybucją ciągłą, korzysta z modelu rozwoju zwanego "rolling release". To oznacza, że WSZYSTKIE pakiety w systemie są na bieżąco aktualizowane do najnowszej wersji. Jeśli najnowsza wersja jakiegoś pakietu nie działa, możesz zainstalować starszą, działającą wersję.
 Ta komenda odinstalowywuje NAZWA_PAKIETU i oferuje listę starszych wersji NAZWA_PAKIETU do wyboru. Ta lista zawiera wszystkie starsze wersje NAZWA_PAKIETU dostępne w cache oraz repozytoriach online (jeśli masz działające połączenie internetowe).
 
 Po udanej instalacji starszej wersji, możesz dodać NAZWA_PAKIETU do listy ignorowanych. Dzięki temu Pacman nie będzie pokazywał dostępnych aktualizacji dla NAZWA_PAKIETU. Usunięcia NAZWA_PAKIETU z listy ignorowanych możesz dokonać za pomocą opcji KONFIGURACJA PACMANA.
@@ -120,14 +122,14 @@ Kilka poleceń, które mogą pomóc naprawić błędy, które czasem przytrafiaj
 Ta komenda usuwa plik blokady bazy Pacmana.
 Uwaga: Użyj tej komendy gdy masz pewność, że żadna inna instancja Pacmana nie jest uruchomiona (jak np. Pacman, Yaourt, Pamac, Octopi, PacmanXG4, ...).
 
-"sudo pacman-mirrors -g && sudo pacman -Syy"
-Następnie wyszukiwany jest najlepszy serwer/mirror udostępniający repozytoria Manjaro (sudo pacman-mirrors -g).
+"sudo reflector --verbose --score 100 --fastest 25 --sort rate --save /etc/pacman.d/mirrorlist -g && sudo pacman -Syy"
+Następnie wyszukiwany jest najlepszy serwer/mirror udostępniający repozytoria ArchLabs (sudo reflector --verbose --score 100 --fastest 25 --sort rate --save /etc/pacman.d/mirrorlist -g).
 W końcu (sudo pacman -Syy) - to polecenie wymusza pobranie najnowszej bazy dostępnych pakietów z wcześniej wybranego najlepszego serwera. Następnie wszystkie zainstalowane pakiety są porównywane z najnowszymi dostępnymi wersjami. Jeśli dostępna jest nowsza wersja, zostanie pobrana i zainstalowana w systemie. Jeśli zainstalowany pakiet jest nowszy niż ostatnia dostępna wersja w repozytorium, zostanie on "zdeaktualizowany. Takie zachowanie zapewnia że pakiety w systemie zawsze są takie same jak te w repozytoriach, nawet jeśli dopiero co  przełączysz się z gałęzi unstable do stable.
 
-"sudo rm -r /etc/pacman.d/gnupg && sudo pacman -Sy gnupg archlinux-keyring manjaro-keyring && sudo pacman-key --init && sudo pacman-key --populate archlinux manjaro"
-Ten zestaw poleceń resetuje zestaw kluczy GPG dla Pacmana, Archa i Manjaro oraz zapewnia, że są one aktualne. Takie problemy zdarzają się na przykład gdy pakiety zaczyna tworzyć nowy developer.
+"sudo rm -r /etc/pacman.d/gnupg && sudo pacman -Sy gnupg archlinux-keyring archlabs-keyring && sudo pacman-key --init && sudo pacman-key --populate archlinux archlabs"
+Ten zestaw poleceń resetuje zestaw kluczy GPG dla Pacmana, Archa i ArchLabs oraz zapewnia, że są one aktualne. Takie problemy zdarzają się na przykład gdy pakiety zaczyna tworzyć nowy developer.
 Uwaga: Ta komenda może trwać dosyć długo. Jeśli wydaje się że system się zatrzymał, oczekuje on na entropię, aby wygenerować klucze. W trakim przypadku warto otworzyć przeglądarkę internetową i poklikać lub powciskać parę klawiszy. To pomoże szybciej wygenerować potrzebną entropię. 
-Uwaga: Jeśli chcesz wykonać to polecenie manualnie na systemie w którym występuje problem z kluczmi, komenda "pacman -Sy gnupg archlinux-keyring manjaro-keyring" nie zdadziała! W takim przypadku połącz się za pomocą przeglądarki www z mirrorem Manjaro, pobierz pakiety i zainstaluj je lokalnie. 
+Uwaga: Jeśli chcesz wykonać to polecenie manualnie na systemie w którym występuje problem z kluczmi, komenda "pacman -Sy gnupg archlinux-keyring archlabs-keyring" nie zdadziała! W takim przypadku połącz się za pomocą przeglądarki www z mirrorem ArchLabs, pobierz pakiety i zainstaluj je lokalnie. 
 
 "sudo pacman -Syyuu"
 To polecenie wymusza pobranie najnowszej bazy dostępnych pakietów z wcześniej wybranego najlepszego serwera. Następnie wszystkie zainstalowane pakiety są porównywane z najnowszymi dostępnymi wersjami. Jeśli dostępna jest nowsza wersja, zostanie pobrana i zainstalowana w systemie. Jeśli zainstalowany pakiet jest nowszy niż ostatnia dostępna wersja w repozytorium, zostanie on "zdeaktualizowany. Takie zachowanie zapewnia że pakiety w systemie zawsze są takie same jak te w repozytoriach, nawet jeśli dopiero co  przełączysz się z gałęzi unstable do stable.
@@ -178,7 +180,7 @@ Uwaga: Domyślnie, po każdych 15 minutach polecenie się zatrzyma i będzie pon
 
 **21 - SZUKAJ + INSTALUJ Z AUR**
 "yaourt NAZWA_PAKIETU"
-To polecenie wyszukuje NAZWA_PAKIETU we wszystkich repozytoriach Manjaro orez w Arch User Repository (AUR). Wyszukuje w nazwach oraz opisach pakietów.
+To polecenie wyszukuje NAZWA_PAKIETU we wszystkich repozytoriach ArchLabs orez w Arch User Repository (AUR). Wyszukuje w nazwach oraz opisach pakietów.
 Przykład: Możesz wyszukać "web browser" i odnajdziesz Firefoxa i inne przeglądarki www. Jedna lub więcej z odnalezionych pozycji może być zainstalowana.
 Jeśli chcesz opuścić tą opcję bez instalacji pakietów, po prostu wciśnij [ENTER].
 

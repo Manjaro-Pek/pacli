@@ -62,7 +62,7 @@ menu_sep() {
         echo ""
         return 0
     fi
-    declare bar='' 
+    declare bar=''
     declare -i i
     for (( i=1; i<=$WMENU; i++ )); do
         bar="${bar}${1:1:1}"
