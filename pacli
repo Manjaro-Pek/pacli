@@ -149,13 +149,11 @@ package_information()
 #6  List Local Package Files
 package_list_files()
 {
-    declare pkg 
-    pkg=($(print_enter "$(gettext 'Select a packages of which to list all files (use TAB to toggle selection)')" \
-            "$(helper '-Qq')" '-m' ))
-    (($?!=0)) && return 1
-    [ -z "$pkg" ] && return 1
-    pacman -Ql "${pkg[@]}"      #helper -Ql "${pkg[*]}"
-    print_prompt "$(gettext 'All local files in package listed')." "" 1
+    declare pkg
+    pkg=($(print_enter "$(gettext 'Select a packages of which to list all files (use TAB to toggle selection)')" "$(helper '-Qq')" '-m'))
+    [[ $? != 0 || -z "$pkg" ]] && return 1
+    f=$(print_enter "$(gettext "Files from package(s) '${pkg[*]}'.")" "$(pacman -Ql "${pkg[@]}")")
+    unset f # we don't actually care about the choice
 }
 
 #13    fix errors
